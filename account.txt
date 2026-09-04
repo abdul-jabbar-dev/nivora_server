@@ -1,0 +1,3 @@
+supebase = payflowup@gmail.com / s3 / auth /postgres 
+facebookAuthApp = abdul-jabbar-dev
+googleAuthApp = payflowup@gmail.com
