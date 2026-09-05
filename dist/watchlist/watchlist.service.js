@@ -27,6 +27,9 @@ let WatchlistService = class WatchlistService {
             if (e.code === 'P2002') {
                 throw new common_1.ConflictException('Product is already in watchlist');
             }
+            if (e.code === 'P2003') {
+                return null;
+            }
             throw e;
         }
     }

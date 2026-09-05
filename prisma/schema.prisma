@@ -17,11 +17,20 @@ model User {
   role      Role     @default(CUSTOMER)
   firstName String?
   lastName  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   
-  orders    Order[]
-  watchlist Watchlist[]
+  // Address Fields
+  address     String?
+  city        String?
+  zip         String?
+  landmark    String?
+  phoneNumber String?
+  
+  orders      Order[]
+  watchlist   Watchlist[]
+  cart        Cart?
+  reviews     Review[]
 }
 
 enum Role {
@@ -49,12 +58,18 @@ model Product {
   variants      Json?
   stock         Int      @default(0)
   categoryId    String?
+  visibleStatus String   @default("show on store")
+  status        String   @default("active")
+  offerPrice    Float?
+  sourceInfo    Json?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   
   category      Category? @relation(fields: [categoryId], references: [id])
   watchlistItems Watchlist[]
   orderItems    OrderItem[]
+  cartItems     CartItem[]
+  reviews       Review[]
 }
 
 model Category {
@@ -77,8 +92,22 @@ model Order {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
-  user      User        @relation(fields: [userId], references: [id])
-  items     OrderItem[]
+  // Shipping Address Fields
+  address     String?
+  city        String?
+  zip         String?
+  landmark    String?
+  phoneNumber String?
+  
+  // Payment and Shipping Info
+  paymentMethod  String?
+  shippingMethod String?
+  bkashNumber    String?
+  trxId          String?
+
+  user          User                 @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
 }
 
 enum OrderStatus {
@@ -110,4 +139,57 @@ model Watchlist {
   product   Product  @relation(fields: [productId], references: [id])
 
   @@unique([userId, productId])
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  productId String
+  variant   String?
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productId, variant])
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  userId      String
+  productId   String
+  rating      Int
+  message     String?
+  media       String[]
+  adminReply  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // A user can only leave one review per product
+  @@unique([userId, productId])
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(uuid())
+  orderId   String
+  status    OrderStatus
+  note      String?
+  createdAt DateTime    @default(now())
+
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

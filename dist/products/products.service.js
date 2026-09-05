@@ -68,9 +68,14 @@ let ProductsService = class ProductsService {
             include: { category: true },
         });
     }
-    async findOne(slug) {
-        const product = await this.prisma.product.findUnique({
-            where: { slug },
+    async findOne(identifier) {
+        const product = await this.prisma.product.findFirst({
+            where: {
+                OR: [
+                    { slug: identifier },
+                    { id: identifier }
+                ]
+            },
             include: { category: true },
         });
         if (!product)
@@ -85,6 +90,17 @@ let ProductsService = class ProductsService {
     async createCategory(data) {
         return this.prisma.category.create({
             data,
+        });
+    }
+    async update(id, data) {
+        return this.prisma.product.update({
+            where: { id },
+            data,
+        });
+    }
+    async remove(id) {
+        return this.prisma.product.delete({
+            where: { id },
         });
     }
 };

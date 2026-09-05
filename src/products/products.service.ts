@@ -63,9 +63,14 @@ export class ProductsService {
     });
   }
 
-  async findOne(slug: string) {
-    const product = await this.prisma.product.findUnique({
-      where: { slug },
+  async findOne(identifier: string) {
+    const product = await this.prisma.product.findFirst({
+      where: {
+        OR: [
+          { slug: identifier },
+          { id: identifier }
+        ]
+      },
       include: { category: true },
     });
     if (!product) throw new NotFoundException('Product not found');
@@ -81,6 +86,19 @@ export class ProductsService {
   async createCategory(data: any) {
     return this.prisma.category.create({
       data,
+    });
+  }
+
+  async update(id: string, data: any) {
+    return this.prisma.product.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.product.delete({
+      where: { id },
     });
   }
 }

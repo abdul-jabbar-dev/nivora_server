@@ -1,6 +1,6 @@
 export declare class UploadService {
     private readonly logger;
     private readonly s3Client;
-    uploadFiles(files: any[]): Promise<string[]>;
+    uploadFiles(files: any[], folder: string): Promise<string[]>;
     private uploadSingleFile;
 }

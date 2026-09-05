@@ -27,6 +27,20 @@ let UsersService = class UsersService {
         }
         return user;
     }
+    async updateProfile(id, data) {
+        return this.prisma.user.update({
+            where: { id },
+            data: {
+                firstName: data.firstName !== undefined ? data.firstName : undefined,
+                lastName: data.lastName !== undefined ? data.lastName : undefined,
+                address: data.address,
+                city: data.city,
+                zip: data.zip,
+                landmark: data.landmark,
+                phoneNumber: data.phoneNumber,
+            },
+        });
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

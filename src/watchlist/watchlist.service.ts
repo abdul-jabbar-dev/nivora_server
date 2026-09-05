@@ -14,6 +14,10 @@ export class WatchlistService {
       if ((e as any).code === 'P2002') {
         throw new ConflictException('Product is already in watchlist');
       }
+      if ((e as any).code === 'P2003') {
+        // Product doesn't exist, ignore or throw NotFound
+        return null;
+      }
       throw e;
     }
   }

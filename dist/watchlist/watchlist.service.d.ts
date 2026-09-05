@@ -37,6 +37,10 @@ export declare class WatchlistService {
             variants: import("@prisma/client/runtime/library").JsonValue | null;
             stock: number;
             categoryId: string | null;
+            visibleStatus: string;
+            status: string;
+            offerPrice: number | null;
+            sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         };
     } & {
         id: string;

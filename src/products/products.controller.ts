@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminKeyGuard } from '../auth/admin-key.guard';
@@ -52,5 +52,17 @@ export class ProductsController {
   @Post()
   create(@Body() createProductDto: any) {
     return this.productsService.create(createProductDto);
+  }
+
+  @UseGuards(AdminKeyGuard)
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateProductDto: any) {
+    return this.productsService.update(id, updateProductDto);
+  }
+
+  @UseGuards(AdminKeyGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.productsService.remove(id);
   }
 }

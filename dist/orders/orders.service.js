@@ -22,6 +22,15 @@ let OrdersService = class OrdersService {
             data: {
                 userId,
                 total: createOrderDto.total,
+                address: createOrderDto.address,
+                city: createOrderDto.city,
+                zip: createOrderDto.zip,
+                landmark: createOrderDto.landmark,
+                phoneNumber: createOrderDto.phoneNumber,
+                paymentMethod: createOrderDto.paymentMethod,
+                shippingMethod: createOrderDto.shippingMethod,
+                bkashNumber: createOrderDto.bkashNumber,
+                trxId: createOrderDto.trxId,
                 items: {
                     create: createOrderDto.items.map((item) => ({
                         productId: item.productId,
@@ -29,25 +38,137 @@ let OrdersService = class OrdersService {
                         price: item.price,
                     })),
                 },
+                statusHistory: {
+                    create: {
+                        status: 'PENDING',
+                        note: 'Order placed'
+                    }
+                }
             },
-            include: { items: true },
+            include: { items: true, statusHistory: true },
         });
     }
-    async findAllForUser(userId) {
-        return this.prisma.order.findMany({
-            where: { userId },
-            include: { items: { include: { product: true } } },
-            orderBy: { createdAt: 'desc' },
-        });
+    async findAllForUser(userId, page = 1, limit = 10, status, search) {
+        const skip = (page - 1) * limit;
+        const whereClause = { userId };
+        if (status) {
+            whereClause.status = status.toUpperCase();
+        }
+        if (search) {
+            whereClause.id = { contains: search, mode: 'insensitive' };
+        }
+        const [orders, total] = await Promise.all([
+            this.prisma.order.findMany({
+                where: whereClause,
+                skip,
+                take: Number(limit),
+                include: {
+                    items: { include: { product: true } },
+                    statusHistory: { orderBy: { createdAt: 'desc' } }
+                },
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.order.count({ where: whereClause })
+        ]);
+        return {
+            orders,
+            total,
+            totalPages: Math.ceil(total / limit)
+        };
     }
     async findOne(id, userId) {
         const order = await this.prisma.order.findFirst({
             where: { id, userId },
-            include: { items: { include: { product: true } } },
+            include: {
+                items: { include: { product: true } },
+                statusHistory: { orderBy: { createdAt: 'desc' } }
+            },
         });
         if (!order)
             throw new common_1.NotFoundException('Order not found');
         return order;
+    }
+    async getAllAdminOrders(page = 1, limit = 20) {
+        const skip = (page - 1) * limit;
+        const [orders, total] = await Promise.all([
+            this.prisma.order.findMany({
+                skip,
+                take: Number(limit),
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    user: {
+                        select: { firstName: true, lastName: true, email: true, id: true }
+                    },
+                    items: {
+                        include: { product: { select: { name: true, imageUrl: true } } }
+                    },
+                    statusHistory: { orderBy: { createdAt: 'desc' } }
+                }
+            }),
+            this.prisma.order.count()
+        ]);
+        return {
+            orders,
+            total,
+            totalPages: Math.ceil(total / limit)
+        };
+    }
+    async getAdminOrderById(id) {
+        const order = await this.prisma.order.findUnique({
+            where: { id },
+            include: {
+                items: {
+                    include: { product: true }
+                },
+                user: {
+                    select: { id: true, email: true, firstName: true, lastName: true }
+                },
+                statusHistory: { orderBy: { createdAt: 'desc' } }
+            }
+        });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found');
+        return order;
+    }
+    async updateOrderStatus(id, status, note) {
+        const order = await this.prisma.order.findUnique({ where: { id } });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found');
+        return this.prisma.order.update({
+            where: { id },
+            data: {
+                status,
+                statusHistory: {
+                    create: {
+                        status,
+                        note
+                    }
+                }
+            },
+            include: { statusHistory: true }
+        });
+    }
+    async cancelOrder(id, userId) {
+        const order = await this.prisma.order.findFirst({
+            where: { id, userId }
+        });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found');
+        if (order.status !== 'PENDING') {
+            throw new Error('Only pending orders can be cancelled');
+        }
+        return this.prisma.order.update({
+            where: { id },
+            data: {
+                status: 'CANCELLED',
+                statusHistory: {
+                    create: {
+                        status: 'CANCELLED',
+                        note: 'Cancelled by customer'
+                    }
+                }
+            }
+        });
     }
 };
 exports.OrdersService = OrdersService;

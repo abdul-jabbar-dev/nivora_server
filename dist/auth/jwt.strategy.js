@@ -26,9 +26,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
                 jwksUri: process.env.SUPABASE_JWKS_URL,
             }),
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            audience: 'authenticated',
-            issuer: process.env.SUPABASE_URL,
-            algorithms: ['RS256'],
+            algorithms: ['RS256', 'ES256', 'HS256'],
         });
         this.prisma = prisma;
     }

@@ -21,11 +21,12 @@ let UploadController = class UploadController {
     constructor(uploadService) {
         this.uploadService = uploadService;
     }
-    async uploadFiles(files) {
+    async uploadFiles(files, folder) {
         if (!files || files.length === 0) {
             throw new common_1.BadRequestException('No files uploaded');
         }
-        const urls = await this.uploadService.uploadFiles(files);
+        const targetFolder = folder || 'misc';
+        const urls = await this.uploadService.uploadFiles(files, targetFolder);
         return { urls };
     }
 };
@@ -34,8 +35,9 @@ __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files')),
     __param(0, (0, common_1.UploadedFiles)()),
+    __param(1, (0, common_1.Body)('folder')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Array, String]),
     __metadata("design:returntype", Promise)
 ], UploadController.prototype, "uploadFiles", null);
 exports.UploadController = UploadController = __decorate([

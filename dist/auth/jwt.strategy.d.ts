@@ -14,6 +14,11 @@ export declare class JwtStrategy extends JwtStrategy_base {
         lastName: string | null;
         createdAt: Date;
         updatedAt: Date;
+        address: string | null;
+        city: string | null;
+        zip: string | null;
+        landmark: string | null;
+        phoneNumber: string | null;
     }>;
 }
 export {};

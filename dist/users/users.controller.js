@@ -25,6 +25,10 @@ let UsersController = class UsersController {
         const userId = req.user.id || req.user.sub;
         return this.usersService.findOne(userId);
     }
+    updateProfile(req, body) {
+        const userId = req.user.id || req.user.sub;
+        return this.usersService.updateProfile(userId, body);
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -35,6 +39,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('profile'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "updateProfile", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

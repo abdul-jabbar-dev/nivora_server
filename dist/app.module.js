@@ -17,12 +17,14 @@ const products_module_js_1 = require("./products/products.module.js");
 const orders_module_js_1 = require("./orders/orders.module.js");
 const watchlist_module_js_1 = require("./watchlist/watchlist.module.js");
 const upload_module_js_1 = require("./upload/upload.module.js");
+const cart_module_1 = require("./cart/cart.module");
+const reviews_module_1 = require("./reviews/reviews.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_js_1.PrismaModule, auth_module_js_1.AuthModule, users_module_js_1.UsersModule, products_module_js_1.ProductsModule, orders_module_js_1.OrdersModule, watchlist_module_js_1.WatchlistModule, upload_module_js_1.UploadModule],
+        imports: [prisma_module_js_1.PrismaModule, auth_module_js_1.AuthModule, users_module_js_1.UsersModule, products_module_js_1.ProductsModule, orders_module_js_1.OrdersModule, watchlist_module_js_1.WatchlistModule, upload_module_js_1.UploadModule, cart_module_1.CartModule, reviews_module_1.ReviewsModule],
         controllers: [app_controller_js_1.AppController],
         providers: [app_service_js_1.AppService],
     })

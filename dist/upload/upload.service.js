@@ -57,11 +57,11 @@ let UploadService = UploadService_1 = class UploadService {
         },
         forcePathStyle: true,
     });
-    async uploadFiles(files) {
-        return Promise.all(files.map(file => this.uploadSingleFile(file)));
+    async uploadFiles(files, folder) {
+        return Promise.all(files.map(file => this.uploadSingleFile(file, folder)));
     }
-    async uploadSingleFile(file) {
-        const filename = `${(0, uuid_1.v4)()}-${file.originalname.replace(/\\s+/g, '-')}`;
+    async uploadSingleFile(file, folder) {
+        const filename = `${folder}/${(0, uuid_1.v4)()}-${file.originalname.replace(/\\s+/g, '-')}`;
         const provider = process.env.STORAGE_PROVIDER || 's3';
         if (provider === 'local') {
             const uploadDir = path.join(process.cwd(), 'public', 'uploads');
@@ -74,7 +74,7 @@ let UploadService = UploadService_1 = class UploadService {
             return `${baseUrl}/uploads/${filename}`;
         }
         else {
-            const bucket = 'products';
+            const bucket = process.env.SUPABASE_BUCKET || 'products';
             await this.s3Client.send(new client_s3_1.PutObjectCommand({
                 Bucket: bucket,
                 Key: filename,
