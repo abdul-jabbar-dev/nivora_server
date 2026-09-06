@@ -1,0 +1,12 @@
+import { Module } from '@nestjs/common';
+import { ProductRequestsService } from './product-requests.service';
+import { ProductRequestsController } from './product-requests.controller';
+import { PrismaModule } from '../prisma/prisma.module';
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [ProductRequestsController],
+  providers: [ProductRequestsService],
+  exports: [ProductRequestsService],
+})
+export class ProductRequestsModule {}

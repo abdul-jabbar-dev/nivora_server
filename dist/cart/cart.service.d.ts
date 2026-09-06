@@ -9,6 +9,8 @@ export declare class CartService {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                newArrivalOrder: number;
+                discountOrder: number;
                 slug: string;
                 description: string | null;
                 price: number;
@@ -29,14 +31,16 @@ export declare class CartService {
                 visibleStatus: string;
                 status: string;
                 offerPrice: number | null;
+                discountExpiryDate: Date | null;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+                expectedArrivalDate: Date | null;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            quantity: number;
             productId: string;
+            quantity: number;
             cartId: string;
             variant: string | null;
         })[];
@@ -57,6 +61,8 @@ export declare class CartService {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                newArrivalOrder: number;
+                discountOrder: number;
                 slug: string;
                 description: string | null;
                 price: number;
@@ -77,14 +83,16 @@ export declare class CartService {
                 visibleStatus: string;
                 status: string;
                 offerPrice: number | null;
+                discountExpiryDate: Date | null;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+                expectedArrivalDate: Date | null;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            quantity: number;
             productId: string;
+            quantity: number;
             cartId: string;
             variant: string | null;
         })[];
@@ -101,6 +109,8 @@ export declare class CartService {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                newArrivalOrder: number;
+                discountOrder: number;
                 slug: string;
                 description: string | null;
                 price: number;
@@ -121,14 +131,16 @@ export declare class CartService {
                 visibleStatus: string;
                 status: string;
                 offerPrice: number | null;
+                discountExpiryDate: Date | null;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+                expectedArrivalDate: Date | null;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            quantity: number;
             productId: string;
+            quantity: number;
             cartId: string;
             variant: string | null;
         })[];
@@ -145,6 +157,8 @@ export declare class CartService {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                newArrivalOrder: number;
+                discountOrder: number;
                 slug: string;
                 description: string | null;
                 price: number;
@@ -165,14 +179,16 @@ export declare class CartService {
                 visibleStatus: string;
                 status: string;
                 offerPrice: number | null;
+                discountExpiryDate: Date | null;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+                expectedArrivalDate: Date | null;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            quantity: number;
             productId: string;
+            quantity: number;
             cartId: string;
             variant: string | null;
         })[];
@@ -189,6 +205,8 @@ export declare class CartService {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                newArrivalOrder: number;
+                discountOrder: number;
                 slug: string;
                 description: string | null;
                 price: number;
@@ -209,14 +227,16 @@ export declare class CartService {
                 visibleStatus: string;
                 status: string;
                 offerPrice: number | null;
+                discountExpiryDate: Date | null;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+                expectedArrivalDate: Date | null;
             };
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            quantity: number;
             productId: string;
+            quantity: number;
             cartId: string;
             variant: string | null;
         })[];

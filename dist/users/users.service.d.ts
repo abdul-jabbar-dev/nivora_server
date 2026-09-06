@@ -6,8 +6,8 @@ export declare class UsersService {
         watchlist: {
             id: string;
             createdAt: Date;
-            userId: string;
             productId: string;
+            userId: string;
         }[];
         orders: {
             id: string;
@@ -20,11 +20,11 @@ export declare class UsersService {
             phoneNumber: string | null;
             status: import(".prisma/client").$Enums.OrderStatus;
             total: number;
+            userId: string;
             paymentMethod: string | null;
             shippingMethod: string | null;
             bkashNumber: string | null;
             trxId: string | null;
-            userId: string;
         }[];
     } & {
         id: string;

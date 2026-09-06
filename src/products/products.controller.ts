@@ -11,14 +11,24 @@ export class ProductsController {
   findAll(
     @Query('category') category?: string,
     @Query('sort') sort?: string,
+    @Query('filter') filter?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('q') q?: string,
+    @Query('minPrice') minPrice?: string,
+    @Query('maxPrice') maxPrice?: string,
+    @Query('minRating') minRating?: string,
   ) {
-    return this.productsService.findAll({
-      category,
-      sort,
-      page: page ? parseInt(page, 10) : 1,
-      limit: limit ? parseInt(limit, 10) : 8,
+    return this.productsService.findAll({ 
+      category, 
+      sort, 
+      filter, 
+      page: page ? Number(page) : undefined, 
+      limit: limit ? Number(limit) : undefined,
+      q,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      minRating: minRating ? Number(minRating) : undefined,
     });
   }
 
@@ -43,9 +53,21 @@ export class ProductsController {
   }
 
   @UseGuards(AdminKeyGuard)
+  @Get(':id/analytics')
+  getAnalytics(@Param('id') id: string) {
+    return this.productsService.getAnalytics(id);
+  }
+
+  @UseGuards(AdminKeyGuard)
   @Post('categories')
   createCategory(@Body() data: any) {
     return this.productsService.createCategory(data);
+  }
+
+  @UseGuards(AdminKeyGuard)
+  @Patch('categories/:id')
+  updateCategory(@Param('id') id: string, @Body() data: any) {
+    return this.productsService.updateCategory(id, data);
   }
 
   @UseGuards(AdminKeyGuard)

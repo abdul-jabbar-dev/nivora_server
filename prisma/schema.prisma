@@ -27,10 +27,11 @@ model User {
   landmark    String?
   phoneNumber String?
   
-  orders      Order[]
-  watchlist   Watchlist[]
-  cart        Cart?
-  reviews     Review[]
+  orders          Order[]
+  watchlist       Watchlist[]
+  cart            Cart?
+  reviews         Review[]
+  productRequests ProductRequest[]
 }
 
 enum Role {
@@ -61,7 +62,11 @@ model Product {
   visibleStatus String   @default("show on store")
   status        String   @default("active")
   offerPrice    Float?
+  discountExpiryDate DateTime?
+  newArrivalOrder Int      @default(0)
+  discountOrder Int        @default(0)
   sourceInfo    Json?
+  expectedArrivalDate DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   
@@ -77,6 +82,7 @@ model Category {
   name      String
   slug      String    @unique
   imageUrl  String?
+  showNav   Boolean   @default(false)
   products  Product[]
 
   parentId  String?
@@ -192,4 +198,24 @@ model OrderStatusHistory {
   createdAt DateTime    @default(now())
 
   order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model ProductRequest {
+  id            String   @id @default(cuid())
+  title         String
+  model         String?
+  images        Json?    // Array of image URLs
+  customerName  String
+  customerPhone String
+  color         String?
+  size          String?
+  quantity      Int?     @default(1)
+  
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  
+  status        String   @default("PENDING") // PENDING, REVIEWED, FULFILLED, REJECTED
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

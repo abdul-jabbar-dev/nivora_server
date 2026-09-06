@@ -18,23 +18,58 @@ let ProductsService = class ProductsService {
         this.prisma = prisma;
     }
     async findAll(params) {
-        const { category, sort, page = 1, limit = 8 } = params;
+        const { category, sort, filter, page = 1, limit = 8, q, minPrice, maxPrice, minRating } = params;
         let where = {};
         if (category && category !== 'all') {
             where.category = { slug: category };
         }
+        if (q) {
+            where.OR = [
+                { name: { contains: q, mode: 'insensitive' } },
+                { description: { contains: q, mode: 'insensitive' } },
+                { slug: { contains: q, mode: 'insensitive' } },
+            ];
+        }
+        if (minPrice !== undefined || maxPrice !== undefined) {
+            where.price = {};
+            if (minPrice !== undefined)
+                where.price.gte = minPrice;
+            if (maxPrice !== undefined)
+                where.price.lte = maxPrice;
+        }
+        if (minRating !== undefined) {
+            where.rating = { gte: minRating };
+        }
+        if (filter === 'new') {
+            where.isNew = true;
+        }
+        else if (filter === 'discount') {
+            where.offerPrice = { not: null, gt: 0 };
+        }
+        else if (filter === 'upcoming') {
+            where.status = 'upcoming';
+        }
         let orderBy = {};
-        if (sort === 'newest') {
+        if (filter === 'new') {
+            orderBy = [{ newArrivalOrder: 'asc' }, { createdAt: 'desc' }];
+        }
+        else if (filter === 'discount') {
+            orderBy = [{ discountOrder: 'asc' }, { createdAt: 'desc' }];
+        }
+        else if (sort === 'newest') {
             orderBy = { isNew: 'desc' };
         }
-        else if (sort === 'price_asc') {
+        else if (sort === 'price-low') {
             orderBy = { price: 'asc' };
         }
-        else if (sort === 'price_desc') {
+        else if (sort === 'price-high') {
             orderBy = { price: 'desc' };
         }
         else if (sort === 'featured') {
             orderBy = { isTrending: 'desc' };
+        }
+        else {
+            orderBy = { createdAt: 'desc' };
         }
         const skip = (page - 1) * limit;
         const [products, total] = await Promise.all([
@@ -82,6 +117,55 @@ let ProductsService = class ProductsService {
             throw new common_1.NotFoundException('Product not found');
         return product;
     }
+    async getAnalytics(id) {
+        const product = await this.prisma.product.findUnique({
+            where: { id },
+            include: { category: true }
+        });
+        if (!product)
+            throw new common_1.NotFoundException('Product not found');
+        const orderItems = await this.prisma.orderItem.findMany({
+            where: {
+                productId: id,
+                order: {
+                    status: {
+                        not: 'CANCELLED'
+                    }
+                }
+            },
+            include: {
+                order: {
+                    include: {
+                        user: true
+                    }
+                }
+            },
+            orderBy: {
+                order: {
+                    createdAt: 'desc'
+                }
+            }
+        });
+        const totalSold = orderItems.reduce((acc, item) => acc + item.quantity, 0);
+        const totalRevenue = orderItems.reduce((acc, item) => acc + (item.quantity * item.price), 0);
+        const recentPurchases = orderItems.map(item => ({
+            id: item.id,
+            buyerName: item.order.user.firstName ? `${item.order.user.firstName} ${item.order.user.lastName || ''}`.trim() : item.order.user.email,
+            buyerEmail: item.order.user.email,
+            quantity: item.quantity,
+            amount: item.quantity * item.price,
+            date: item.order.createdAt,
+            status: item.order.status
+        }));
+        return {
+            product,
+            analytics: {
+                totalSold,
+                totalRevenue,
+            },
+            recentPurchases
+        };
+    }
     async create(data) {
         return this.prisma.product.create({
             data,
@@ -89,6 +173,12 @@ let ProductsService = class ProductsService {
     }
     async createCategory(data) {
         return this.prisma.category.create({
+            data,
+        });
+    }
+    async updateCategory(id, data) {
+        return this.prisma.category.update({
+            where: { id },
             data,
         });
     }

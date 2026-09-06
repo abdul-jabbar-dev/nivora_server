@@ -18,8 +18,8 @@ export declare class ReviewsController {
             createdAt: Date;
             updatedAt: Date;
             rating: number;
-            userId: string;
             productId: string;
+            userId: string;
             message: string | null;
             media: string[];
             adminReply: string | null;
@@ -39,8 +39,8 @@ export declare class ReviewsController {
             createdAt: Date;
             updatedAt: Date;
             rating: number;
-            userId: string;
             productId: string;
+            userId: string;
             message: string | null;
             media: string[];
             adminReply: string | null;
@@ -58,8 +58,8 @@ export declare class ReviewsController {
         createdAt: Date;
         updatedAt: Date;
         rating: number;
-        userId: string;
         productId: string;
+        userId: string;
         message: string | null;
         media: string[];
         adminReply: string | null;
@@ -71,8 +71,8 @@ export declare class ReviewsController {
         createdAt: Date;
         updatedAt: Date;
         rating: number;
-        userId: string;
         productId: string;
+        userId: string;
         message: string | null;
         media: string[];
         adminReply: string | null;

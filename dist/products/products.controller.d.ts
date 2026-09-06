@@ -2,19 +2,18 @@ import { ProductsService } from './products.service';
 export declare class ProductsController {
     private readonly productsService;
     constructor(productsService: ProductsService);
-    findAll(category?: string, sort?: string, page?: string, limit?: string): Promise<{
+    findAll(category?: string, sort?: string, filter?: string, page?: string, limit?: string, q?: string, minPrice?: string, maxPrice?: string, minRating?: string): Promise<{
         products: ({
             category: {
                 id: string;
                 name: string;
                 slug: string;
                 imageUrl: string | null;
+                showNav: boolean;
                 parentId: string | null;
             };
         } & {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             name: string;
             slug: string;
             description: string | null;
@@ -36,7 +35,13 @@ export declare class ProductsController {
             visibleStatus: string;
             status: string;
             offerPrice: number | null;
+            discountExpiryDate: Date | null;
+            newArrivalOrder: number;
+            discountOrder: number;
             sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+            expectedArrivalDate: Date | null;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
         total: number;
         totalPages: number;
@@ -46,6 +51,7 @@ export declare class ProductsController {
         name: string;
         slug: string;
         imageUrl: string | null;
+        showNav: boolean;
         parentId: string | null;
     }[]>;
     getTrending(): Promise<({
@@ -54,12 +60,11 @@ export declare class ProductsController {
             name: string;
             slug: string;
             imageUrl: string | null;
+            showNav: boolean;
             parentId: string | null;
         };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         slug: string;
         description: string | null;
@@ -81,7 +86,13 @@ export declare class ProductsController {
         visibleStatus: string;
         status: string;
         offerPrice: number | null;
+        discountExpiryDate: Date | null;
+        newArrivalOrder: number;
+        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+        expectedArrivalDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     getRelated(categoryId: string, limit?: string): Promise<({
         category: {
@@ -89,12 +100,11 @@ export declare class ProductsController {
             name: string;
             slug: string;
             imageUrl: string | null;
+            showNav: boolean;
             parentId: string | null;
         };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         slug: string;
         description: string | null;
@@ -116,7 +126,13 @@ export declare class ProductsController {
         visibleStatus: string;
         status: string;
         offerPrice: number | null;
+        discountExpiryDate: Date | null;
+        newArrivalOrder: number;
+        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+        expectedArrivalDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     findOne(slug: string): Promise<{
         category: {
@@ -124,12 +140,11 @@ export declare class ProductsController {
             name: string;
             slug: string;
             imageUrl: string | null;
+            showNav: boolean;
             parentId: string | null;
         };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         slug: string;
         description: string | null;
@@ -151,19 +166,87 @@ export declare class ProductsController {
         visibleStatus: string;
         status: string;
         offerPrice: number | null;
+        discountExpiryDate: Date | null;
+        newArrivalOrder: number;
+        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+        expectedArrivalDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    getAnalytics(id: string): Promise<{
+        product: {
+            category: {
+                id: string;
+                name: string;
+                slug: string;
+                imageUrl: string | null;
+                showNav: boolean;
+                parentId: string | null;
+            };
+        } & {
+            id: string;
+            name: string;
+            slug: string;
+            description: string | null;
+            price: number;
+            originalPrice: number | null;
+            imageUrl: string;
+            images: string[];
+            brand: string | null;
+            rating: number;
+            reviewCount: number;
+            isNew: boolean;
+            isTrending: boolean;
+            features: string[];
+            specifications: import("@prisma/client/runtime/library").JsonValue | null;
+            shipping: import("@prisma/client/runtime/library").JsonValue | null;
+            variants: import("@prisma/client/runtime/library").JsonValue | null;
+            stock: number;
+            categoryId: string | null;
+            visibleStatus: string;
+            status: string;
+            offerPrice: number | null;
+            discountExpiryDate: Date | null;
+            newArrivalOrder: number;
+            discountOrder: number;
+            sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+            expectedArrivalDate: Date | null;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+        analytics: {
+            totalSold: number;
+            totalRevenue: number;
+        };
+        recentPurchases: {
+            id: string;
+            buyerName: string;
+            buyerEmail: string;
+            quantity: number;
+            amount: number;
+            date: Date;
+            status: import(".prisma/client").$Enums.OrderStatus;
+        }[];
     }>;
     createCategory(data: any): Promise<{
         id: string;
         name: string;
         slug: string;
         imageUrl: string | null;
+        showNav: boolean;
+        parentId: string | null;
+    }>;
+    updateCategory(id: string, data: any): Promise<{
+        id: string;
+        name: string;
+        slug: string;
+        imageUrl: string | null;
+        showNav: boolean;
         parentId: string | null;
     }>;
     create(createProductDto: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         slug: string;
         description: string | null;
@@ -185,12 +268,16 @@ export declare class ProductsController {
         visibleStatus: string;
         status: string;
         offerPrice: number | null;
+        discountExpiryDate: Date | null;
+        newArrivalOrder: number;
+        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+        expectedArrivalDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, updateProductDto: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         slug: string;
         description: string | null;
@@ -212,12 +299,16 @@ export declare class ProductsController {
         visibleStatus: string;
         status: string;
         offerPrice: number | null;
+        discountExpiryDate: Date | null;
+        newArrivalOrder: number;
+        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+        expectedArrivalDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         slug: string;
         description: string | null;
@@ -239,6 +330,12 @@ export declare class ProductsController {
         visibleStatus: string;
         status: string;
         offerPrice: number | null;
+        discountExpiryDate: Date | null;
+        newArrivalOrder: number;
+        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+        expectedArrivalDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

@@ -5,23 +5,65 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(params: { category?: string; sort?: string; page?: number; limit?: number }) {
-    const { category, sort, page = 1, limit = 8 } = params;
+  async findAll(params: { 
+    category?: string; 
+    sort?: string; 
+    filter?: string; 
+    page?: number; 
+    limit?: number;
+    q?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    minRating?: number;
+  }) {
+    const { category, sort, filter, page = 1, limit = 8, q, minPrice, maxPrice, minRating } = params;
     
     let where: any = {};
     if (category && category !== 'all') {
       where.category = { slug: category };
     }
 
+    if (q) {
+      where.OR = [
+        { name: { contains: q, mode: 'insensitive' } },
+        { description: { contains: q, mode: 'insensitive' } },
+        { slug: { contains: q, mode: 'insensitive' } },
+      ];
+    }
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      where.price = {};
+      if (minPrice !== undefined) where.price.gte = minPrice;
+      if (maxPrice !== undefined) where.price.lte = maxPrice;
+    }
+
+    if (minRating !== undefined) {
+      where.rating = { gte: minRating };
+    }
+
+    if (filter === 'new') {
+      where.isNew = true;
+    } else if (filter === 'discount') {
+      where.offerPrice = { not: null, gt: 0 };
+    } else if (filter === 'upcoming') {
+      where.status = 'upcoming';
+    }
+
     let orderBy: any = {};
-    if (sort === 'newest') {
+    if (filter === 'new') {
+      orderBy = [{ newArrivalOrder: 'asc' }, { createdAt: 'desc' }];
+    } else if (filter === 'discount') {
+      orderBy = [{ discountOrder: 'asc' }, { createdAt: 'desc' }];
+    } else if (sort === 'newest') {
       orderBy = { isNew: 'desc' };
-    } else if (sort === 'price_asc') {
+    } else if (sort === 'price-low') {
       orderBy = { price: 'asc' };
-    } else if (sort === 'price_desc') {
+    } else if (sort === 'price-high') {
       orderBy = { price: 'desc' };
     } else if (sort === 'featured') {
       orderBy = { isTrending: 'desc' };
+    } else {
+      orderBy = { createdAt: 'desc' };
     }
 
     const skip = (page - 1) * limit;
@@ -77,6 +119,59 @@ export class ProductsService {
     return product;
   }
 
+  async getAnalytics(id: string) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+      include: { category: true }
+    });
+    if (!product) throw new NotFoundException('Product not found');
+
+    const orderItems = await this.prisma.orderItem.findMany({
+      where: { 
+        productId: id,
+        order: {
+          status: {
+            not: 'CANCELLED'
+          }
+        }
+      },
+      include: { 
+        order: {
+          include: {
+            user: true
+          }
+        } 
+      },
+      orderBy: {
+        order: {
+          createdAt: 'desc'
+        }
+      }
+    });
+
+    const totalSold = orderItems.reduce((acc, item) => acc + item.quantity, 0);
+    const totalRevenue = orderItems.reduce((acc, item) => acc + (item.quantity * item.price), 0);
+
+    const recentPurchases = orderItems.map(item => ({
+      id: item.id,
+      buyerName: item.order.user.firstName ? `${item.order.user.firstName} ${item.order.user.lastName || ''}`.trim() : item.order.user.email,
+      buyerEmail: item.order.user.email,
+      quantity: item.quantity,
+      amount: item.quantity * item.price,
+      date: item.order.createdAt,
+      status: item.order.status
+    }));
+
+    return {
+      product,
+      analytics: {
+        totalSold,
+        totalRevenue,
+      },
+      recentPurchases
+    };
+  }
+
   async create(data: any) {
     return this.prisma.product.create({
       data,
@@ -85,6 +180,13 @@ export class ProductsService {
 
   async createCategory(data: any) {
     return this.prisma.category.create({
+      data,
+    });
+  }
+
+  async updateCategory(id: string, data: any) {
+    return this.prisma.category.update({
+      where: { id },
       data,
     });
   }
