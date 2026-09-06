@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AdminKeyGuard } from '../auth/admin-key.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('orders')
 export class OrdersController {
@@ -33,23 +34,34 @@ export class OrdersController {
     );
   }
 
+  @Get('admin/dashboard-stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  getDashboardStats() {
+    return this.ordersService.getDashboardStats();
+  }
+
   @Get('admin/all')
-  @UseGuards(AdminKeyGuard)
-  getAllAdminOrders(@Query('page') page?: string, @Query('limit') limit?: string) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  getAllAdminOrders(@Query('page') page?: string, @Query('limit') limit?: string, @Query('status') status?: string) {
     return this.ordersService.getAllAdminOrders(
       page ? parseInt(page) : 1,
-      limit ? parseInt(limit) : 20
+      limit ? parseInt(limit) : 20,
+      status
     );
   }
 
   @Get('admin/:id')
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   getAdminOrderById(@Param('id') id: string) {
     return this.ordersService.getAdminOrderById(id);
   }
 
   @Patch('admin/:id/status')
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   updateOrderStatus(@Param('id') id: string, @Body() body: { status: string, note?: string }) {
     return this.ordersService.updateOrderStatus(id, body.status, body.note);
   }

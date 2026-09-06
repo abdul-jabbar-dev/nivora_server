@@ -46,14 +46,15 @@ const client_s3_1 = require("@aws-sdk/client-s3");
 const uuid_1 = require("uuid");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const env_1 = require("../env");
 let UploadService = UploadService_1 = class UploadService {
     logger = new common_1.Logger(UploadService_1.name);
     s3Client = new client_s3_1.S3Client({
-        region: process.env.S3_REGION || 'ap-northeast-2',
-        endpoint: process.env.S3_ENDPOINT,
+        region: env_1.ENV.S3_REGION,
+        endpoint: env_1.ENV.S3_ENDPOINT,
         credentials: {
-            accessKeyId: process.env.S3_ACCESS_KEY_ID,
-            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+            accessKeyId: env_1.ENV.S3_ACCESS_KEY_ID,
+            secretAccessKey: env_1.ENV.S3_SECRET_ACCESS_KEY,
         },
         forcePathStyle: true,
     });
@@ -62,7 +63,7 @@ let UploadService = UploadService_1 = class UploadService {
     }
     async uploadSingleFile(file, folder) {
         const filename = `${folder}/${(0, uuid_1.v4)()}-${file.originalname.replace(/\\s+/g, '-')}`;
-        const provider = process.env.STORAGE_PROVIDER || 's3';
+        const provider = env_1.ENV.STORAGE_PROVIDER;
         if (provider === 'local') {
             const uploadDir = path.join(process.cwd(), 'public', 'uploads');
             if (!fs.existsSync(uploadDir)) {
@@ -70,11 +71,11 @@ let UploadService = UploadService_1 = class UploadService {
             }
             const filePath = path.join(uploadDir, filename);
             fs.writeFileSync(filePath, file.buffer);
-            const baseUrl = process.env.BACKEND_URL || 'http://localhost:3005';
+            const baseUrl = env_1.ENV.BACKEND_URL;
             return `${baseUrl}/uploads/${filename}`;
         }
         else {
-            const bucket = process.env.SUPABASE_BUCKET || 'products';
+            const bucket = env_1.ENV.SUPABASE_BUCKET;
             await this.s3Client.send(new client_s3_1.PutObjectCommand({
                 Bucket: bucket,
                 Key: filename,
@@ -82,7 +83,7 @@ let UploadService = UploadService_1 = class UploadService {
                 ContentType: file.mimetype,
                 ACL: 'public-read',
             }));
-            const baseUrl = process.env.SUPABASE_URL;
+            const baseUrl = env_1.ENV.SUPABASE_URL;
             return `${baseUrl}/storage/v1/object/public/${bucket}/${filename}`;
         }
     }

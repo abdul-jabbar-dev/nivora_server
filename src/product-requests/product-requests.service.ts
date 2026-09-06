@@ -17,4 +17,30 @@ export class ProductRequestsService {
       include: { user: true },
     });
   }
+
+  async findByUserId(userId: string) {
+    return this.prisma.productRequest.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findOne(id: string) {
+    const req = await this.prisma.productRequest.findUnique({
+      where: { id },
+      include: { user: true },
+    });
+    if (!req) {
+      const common = require('@nestjs/common');
+      throw new common.NotFoundException('Product request not found');
+    }
+    return req;
+  }
+
+  async updateStatus(id: string, status: string) {
+    return this.prisma.productRequest.update({
+      where: { id },
+      data: { status },
+    });
+  }
 }

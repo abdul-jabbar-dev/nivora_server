@@ -14,10 +14,15 @@ export declare class ProductsController {
             };
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            status: string;
+            price: number;
             slug: string;
             description: string | null;
-            price: number;
+            newArrivalOrder: number;
+            discountOrder: number;
             originalPrice: number | null;
             imageUrl: string;
             images: string[];
@@ -31,17 +36,14 @@ export declare class ProductsController {
             shipping: import("@prisma/client/runtime/library").JsonValue | null;
             variants: import("@prisma/client/runtime/library").JsonValue | null;
             stock: number;
+            likesCount: number;
+            dislikesCount: number;
             categoryId: string | null;
             visibleStatus: string;
-            status: string;
             offerPrice: number | null;
             discountExpiryDate: Date | null;
-            newArrivalOrder: number;
-            discountOrder: number;
             sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
             expectedArrivalDate: Date | null;
-            createdAt: Date;
-            updatedAt: Date;
         })[];
         total: number;
         totalPages: number;
@@ -65,10 +67,15 @@ export declare class ProductsController {
         };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -82,17 +89,14 @@ export declare class ProductsController {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     getRelated(categoryId: string, limit?: string): Promise<({
         category: {
@@ -105,10 +109,15 @@ export declare class ProductsController {
         };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -122,17 +131,14 @@ export declare class ProductsController {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     findOne(slug: string): Promise<{
         category: {
@@ -145,10 +151,15 @@ export declare class ProductsController {
         };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -162,17 +173,23 @@ export declare class ProductsController {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
+    }>;
+    getInteractionStatus(req: any, id: string): Promise<{
+        canInteract: boolean;
+        interaction: string;
+    }>;
+    setInteraction(req: any, id: string, body: {
+        isLike: boolean;
+    }): Promise<{
+        success: boolean;
     }>;
     getAnalytics(id: string): Promise<{
         product: {
@@ -186,10 +203,15 @@ export declare class ProductsController {
             };
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            status: string;
+            price: number;
             slug: string;
             description: string | null;
-            price: number;
+            newArrivalOrder: number;
+            discountOrder: number;
             originalPrice: number | null;
             imageUrl: string;
             images: string[];
@@ -203,17 +225,14 @@ export declare class ProductsController {
             shipping: import("@prisma/client/runtime/library").JsonValue | null;
             variants: import("@prisma/client/runtime/library").JsonValue | null;
             stock: number;
+            likesCount: number;
+            dislikesCount: number;
             categoryId: string | null;
             visibleStatus: string;
-            status: string;
             offerPrice: number | null;
             discountExpiryDate: Date | null;
-            newArrivalOrder: number;
-            discountOrder: number;
             sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
             expectedArrivalDate: Date | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         analytics: {
             totalSold: number;
@@ -247,10 +266,15 @@ export declare class ProductsController {
     }>;
     create(createProductDto: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -264,24 +288,26 @@ export declare class ProductsController {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(id: string, updateProductDto: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -295,24 +321,26 @@ export declare class ProductsController {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -326,16 +354,13 @@ export declare class ProductsController {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

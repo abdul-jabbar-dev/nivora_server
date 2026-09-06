@@ -5,10 +5,10 @@ export declare class OrdersService {
     create(userId: string, createOrderDto: any): Promise<{
         items: {
             id: string;
-            price: number;
             orderId: string;
             productId: string;
             quantity: number;
+            price: number;
         }[];
         statusHistory: {
             id: string;
@@ -26,9 +26,9 @@ export declare class OrdersService {
         zip: string | null;
         landmark: string | null;
         phoneNumber: string | null;
+        userId: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         total: number;
-        userId: string;
         paymentMethod: string | null;
         shippingMethod: string | null;
         bkashNumber: string | null;
@@ -42,11 +42,12 @@ export declare class OrdersService {
                     createdAt: Date;
                     updatedAt: Date;
                     name: string;
-                    newArrivalOrder: number;
-                    discountOrder: number;
+                    status: string;
+                    price: number;
                     slug: string;
                     description: string | null;
-                    price: number;
+                    newArrivalOrder: number;
+                    discountOrder: number;
                     originalPrice: number | null;
                     imageUrl: string;
                     images: string[];
@@ -60,9 +61,10 @@ export declare class OrdersService {
                     shipping: import("@prisma/client/runtime/library").JsonValue | null;
                     variants: import("@prisma/client/runtime/library").JsonValue | null;
                     stock: number;
+                    likesCount: number;
+                    dislikesCount: number;
                     categoryId: string | null;
                     visibleStatus: string;
-                    status: string;
                     offerPrice: number | null;
                     discountExpiryDate: Date | null;
                     sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
@@ -70,10 +72,10 @@ export declare class OrdersService {
                 };
             } & {
                 id: string;
-                price: number;
                 orderId: string;
                 productId: string;
                 quantity: number;
+                price: number;
             })[];
             statusHistory: {
                 id: string;
@@ -91,9 +93,9 @@ export declare class OrdersService {
             zip: string | null;
             landmark: string | null;
             phoneNumber: string | null;
+            userId: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             total: number;
-            userId: string;
             paymentMethod: string | null;
             shippingMethod: string | null;
             bkashNumber: string | null;
@@ -109,11 +111,12 @@ export declare class OrdersService {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
-                newArrivalOrder: number;
-                discountOrder: number;
+                status: string;
+                price: number;
                 slug: string;
                 description: string | null;
-                price: number;
+                newArrivalOrder: number;
+                discountOrder: number;
                 originalPrice: number | null;
                 imageUrl: string;
                 images: string[];
@@ -127,9 +130,10 @@ export declare class OrdersService {
                 shipping: import("@prisma/client/runtime/library").JsonValue | null;
                 variants: import("@prisma/client/runtime/library").JsonValue | null;
                 stock: number;
+                likesCount: number;
+                dislikesCount: number;
                 categoryId: string | null;
                 visibleStatus: string;
-                status: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
@@ -137,10 +141,10 @@ export declare class OrdersService {
             };
         } & {
             id: string;
-            price: number;
             orderId: string;
             productId: string;
             quantity: number;
+            price: number;
         })[];
         statusHistory: {
             id: string;
@@ -158,15 +162,15 @@ export declare class OrdersService {
         zip: string | null;
         landmark: string | null;
         phoneNumber: string | null;
+        userId: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         total: number;
-        userId: string;
         paymentMethod: string | null;
         shippingMethod: string | null;
         bkashNumber: string | null;
         trxId: string | null;
     }>;
-    getAllAdminOrders(page?: number, limit?: number): Promise<{
+    getAllAdminOrders(page?: number, limit?: number, status?: string): Promise<{
         orders: ({
             user: {
                 id: string;
@@ -181,10 +185,10 @@ export declare class OrdersService {
                 };
             } & {
                 id: string;
-                price: number;
                 orderId: string;
                 productId: string;
                 quantity: number;
+                price: number;
             })[];
             statusHistory: {
                 id: string;
@@ -202,9 +206,9 @@ export declare class OrdersService {
             zip: string | null;
             landmark: string | null;
             phoneNumber: string | null;
+            userId: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             total: number;
-            userId: string;
             paymentMethod: string | null;
             shippingMethod: string | null;
             bkashNumber: string | null;
@@ -212,6 +216,47 @@ export declare class OrdersService {
         })[];
         total: number;
         totalPages: number;
+    }>;
+    getDashboardStats(): Promise<{
+        totalRevenue: number;
+        totalOrders: number;
+        pendingOrders: number;
+        totalCustomers: number;
+        recentOrders: ({
+            user: {
+                email: string;
+                firstName: string;
+                lastName: string;
+            };
+            items: ({
+                product: {
+                    name: string;
+                    imageUrl: string;
+                };
+            } & {
+                id: string;
+                orderId: string;
+                productId: string;
+                quantity: number;
+                price: number;
+            })[];
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            address: string | null;
+            city: string | null;
+            zip: string | null;
+            landmark: string | null;
+            phoneNumber: string | null;
+            userId: string;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            total: number;
+            paymentMethod: string | null;
+            shippingMethod: string | null;
+            bkashNumber: string | null;
+            trxId: string | null;
+        })[];
     }>;
     getAdminOrderById(id: string): Promise<{
         user: {
@@ -226,11 +271,12 @@ export declare class OrdersService {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
-                newArrivalOrder: number;
-                discountOrder: number;
+                status: string;
+                price: number;
                 slug: string;
                 description: string | null;
-                price: number;
+                newArrivalOrder: number;
+                discountOrder: number;
                 originalPrice: number | null;
                 imageUrl: string;
                 images: string[];
@@ -244,9 +290,10 @@ export declare class OrdersService {
                 shipping: import("@prisma/client/runtime/library").JsonValue | null;
                 variants: import("@prisma/client/runtime/library").JsonValue | null;
                 stock: number;
+                likesCount: number;
+                dislikesCount: number;
                 categoryId: string | null;
                 visibleStatus: string;
-                status: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
@@ -254,10 +301,10 @@ export declare class OrdersService {
             };
         } & {
             id: string;
-            price: number;
             orderId: string;
             productId: string;
             quantity: number;
+            price: number;
         })[];
         statusHistory: {
             id: string;
@@ -275,9 +322,9 @@ export declare class OrdersService {
         zip: string | null;
         landmark: string | null;
         phoneNumber: string | null;
+        userId: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         total: number;
-        userId: string;
         paymentMethod: string | null;
         shippingMethod: string | null;
         bkashNumber: string | null;
@@ -300,9 +347,9 @@ export declare class OrdersService {
         zip: string | null;
         landmark: string | null;
         phoneNumber: string | null;
+        userId: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         total: number;
-        userId: string;
         paymentMethod: string | null;
         shippingMethod: string | null;
         bkashNumber: string | null;
@@ -317,9 +364,9 @@ export declare class OrdersService {
         zip: string | null;
         landmark: string | null;
         phoneNumber: string | null;
+        userId: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         total: number;
-        userId: string;
         paymentMethod: string | null;
         shippingMethod: string | null;
         bkashNumber: string | null;

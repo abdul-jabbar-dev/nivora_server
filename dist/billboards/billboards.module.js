@@ -6,20 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminKeyGuard = void 0;
+exports.BillboardsModule = void 0;
 const common_1 = require("@nestjs/common");
-let AdminKeyGuard = class AdminKeyGuard {
-    canActivate(context) {
-        const request = context.switchToHttp().getRequest();
-        const adminKey = request.headers['x-admin-secret'];
-        if (adminKey === 'admin_secret_12345') {
-            return true;
-        }
-        throw new common_1.UnauthorizedException('Invalid Admin Key');
-    }
+const billboards_service_js_1 = require("./billboards.service.js");
+const billboards_controller_js_1 = require("./billboards.controller.js");
+const prisma_module_js_1 = require("../prisma/prisma.module.js");
+let BillboardsModule = class BillboardsModule {
 };
-exports.AdminKeyGuard = AdminKeyGuard;
-exports.AdminKeyGuard = AdminKeyGuard = __decorate([
-    (0, common_1.Injectable)()
-], AdminKeyGuard);
-//# sourceMappingURL=admin-key.guard.js.map
+exports.BillboardsModule = BillboardsModule;
+exports.BillboardsModule = BillboardsModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_module_js_1.PrismaModule],
+        controllers: [billboards_controller_js_1.BillboardsController],
+        providers: [billboards_service_js_1.BillboardsService],
+    })
+], BillboardsModule);
+//# sourceMappingURL=billboards.module.js.map

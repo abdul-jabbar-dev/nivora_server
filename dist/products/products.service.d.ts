@@ -24,10 +24,15 @@ export declare class ProductsService {
             };
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            status: string;
+            price: number;
             slug: string;
             description: string | null;
-            price: number;
+            newArrivalOrder: number;
+            discountOrder: number;
             originalPrice: number | null;
             imageUrl: string;
             images: string[];
@@ -41,17 +46,14 @@ export declare class ProductsService {
             shipping: import("@prisma/client/runtime/library").JsonValue | null;
             variants: import("@prisma/client/runtime/library").JsonValue | null;
             stock: number;
+            likesCount: number;
+            dislikesCount: number;
             categoryId: string | null;
             visibleStatus: string;
-            status: string;
             offerPrice: number | null;
             discountExpiryDate: Date | null;
-            newArrivalOrder: number;
-            discountOrder: number;
             sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
             expectedArrivalDate: Date | null;
-            createdAt: Date;
-            updatedAt: Date;
         })[];
         total: number;
         totalPages: number;
@@ -75,10 +77,15 @@ export declare class ProductsService {
         };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -92,17 +99,14 @@ export declare class ProductsService {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     getRelated(categoryId: string, limit?: number): Promise<({
         category: {
@@ -115,10 +119,15 @@ export declare class ProductsService {
         };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -132,17 +141,14 @@ export declare class ProductsService {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     findOne(identifier: string): Promise<{
         category: {
@@ -155,10 +161,15 @@ export declare class ProductsService {
         };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -172,17 +183,14 @@ export declare class ProductsService {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getAnalytics(id: string): Promise<{
         product: {
@@ -196,10 +204,15 @@ export declare class ProductsService {
             };
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            status: string;
+            price: number;
             slug: string;
             description: string | null;
-            price: number;
+            newArrivalOrder: number;
+            discountOrder: number;
             originalPrice: number | null;
             imageUrl: string;
             images: string[];
@@ -213,17 +226,14 @@ export declare class ProductsService {
             shipping: import("@prisma/client/runtime/library").JsonValue | null;
             variants: import("@prisma/client/runtime/library").JsonValue | null;
             stock: number;
+            likesCount: number;
+            dislikesCount: number;
             categoryId: string | null;
             visibleStatus: string;
-            status: string;
             offerPrice: number | null;
             discountExpiryDate: Date | null;
-            newArrivalOrder: number;
-            discountOrder: number;
             sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
             expectedArrivalDate: Date | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         analytics: {
             totalSold: number;
@@ -241,10 +251,15 @@ export declare class ProductsService {
     }>;
     create(data: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -258,17 +273,14 @@ export declare class ProductsService {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     createCategory(data: any): Promise<{
         id: string;
@@ -288,10 +300,15 @@ export declare class ProductsService {
     }>;
     update(id: string, data: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -305,24 +322,26 @@ export declare class ProductsService {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
+        status: string;
+        price: number;
         slug: string;
         description: string | null;
-        price: number;
+        newArrivalOrder: number;
+        discountOrder: number;
         originalPrice: number | null;
         imageUrl: string;
         images: string[];
@@ -336,16 +355,20 @@ export declare class ProductsService {
         shipping: import("@prisma/client/runtime/library").JsonValue | null;
         variants: import("@prisma/client/runtime/library").JsonValue | null;
         stock: number;
+        likesCount: number;
+        dislikesCount: number;
         categoryId: string | null;
         visibleStatus: string;
-        status: string;
         offerPrice: number | null;
         discountExpiryDate: Date | null;
-        newArrivalOrder: number;
-        discountOrder: number;
         sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
         expectedArrivalDate: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
+    }>;
+    getInteractionStatus(userId: string, productId: string): Promise<{
+        canInteract: boolean;
+        interaction: string;
+    }>;
+    setInteraction(userId: string, productId: string, isLike: boolean): Promise<{
+        success: boolean;
     }>;
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -202,5 +202,98 @@ export class ProductsService {
     return this.prisma.product.delete({
       where: { id },
     });
+  }
+
+  async getInteractionStatus(userId: string, productId: string) {
+    const orderItem = await this.prisma.orderItem.findFirst({
+      where: {
+        productId,
+        order: {
+          userId,
+          status: { not: 'CANCELLED' }
+        }
+      }
+    });
+
+    const canInteract = !!orderItem;
+
+    const interaction = await this.prisma.productInteraction.findUnique({
+      where: { userId_productId: { userId, productId } }
+    });
+
+    return {
+      canInteract,
+      interaction: interaction ? (interaction.isLike ? 'like' : 'dislike') : null
+    };
+  }
+
+  async setInteraction(userId: string, productId: string, isLike: boolean) {
+    const orderItem = await this.prisma.orderItem.findFirst({
+      where: {
+        productId,
+        order: {
+          userId,
+          status: { not: 'CANCELLED' }
+        }
+      }
+    });
+
+    if (!orderItem) {
+      throw new ForbiddenException('You can only interact with products you have purchased.');
+    }
+
+    const existing = await this.prisma.productInteraction.findUnique({
+      where: { userId_productId: { userId, productId } }
+    });
+
+    await this.prisma.$transaction(async (prisma) => {
+      if (existing) {
+        if (existing.isLike === isLike) {
+          // Toggle off
+          await prisma.productInteraction.delete({
+            where: { id: existing.id }
+          });
+          await prisma.product.update({
+            where: { id: productId },
+            data: {
+              likesCount: isLike ? { decrement: 1 } : undefined,
+              dislikesCount: !isLike ? { decrement: 1 } : undefined
+            }
+          });
+          return;
+        }
+
+        // Change vote
+        await prisma.productInteraction.update({
+          where: { id: existing.id },
+          data: { isLike }
+        });
+        await prisma.product.update({
+          where: { id: productId },
+          data: {
+            likesCount: isLike ? { increment: 1 } : { decrement: 1 },
+            dislikesCount: !isLike ? { increment: 1 } : { decrement: 1 }
+          }
+        });
+      } else {
+        // New vote
+        await prisma.productInteraction.create({
+          data: {
+            userId,
+            productId,
+            isLike
+          }
+        });
+        await prisma.product.update({
+          where: { id: productId },
+          data: {
+            likesCount: isLike ? { increment: 1 } : undefined,
+            dislikesCount: !isLike ? { increment: 1 } : undefined
+          }
+        });
+      }
+    });
+
+    return { success: true };
   }
 }

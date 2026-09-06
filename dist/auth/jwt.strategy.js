@@ -15,18 +15,20 @@ const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const jwks_rsa_1 = require("jwks-rsa");
 const prisma_service_1 = require("../prisma/prisma.service");
+const env_1 = require("../env");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     prisma;
     constructor(prisma) {
         super({
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
             secretOrKeyProvider: (0, jwks_rsa_1.passportJwtSecret)({
                 cache: true,
                 rateLimit: true,
                 jwksRequestsPerMinute: 5,
-                jwksUri: process.env.SUPABASE_JWKS_URL,
+                jwksUri: env_1.ENV.SUPABASE_JWKS_URL,
             }),
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            algorithms: ['RS256', 'ES256', 'HS256'],
+            algorithms: ['RS256', 'ES256'],
         });
         this.prisma = prisma;
     }

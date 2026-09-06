@@ -15,7 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
 const products_service_1 = require("./products.service");
-const admin_key_guard_1 = require("../auth/admin-key.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const roles_guard_1 = require("../auth/roles.guard");
+const roles_decorator_1 = require("../auth/roles.decorator");
 let ProductsController = class ProductsController {
     productsService;
     constructor(productsService) {
@@ -45,6 +47,12 @@ let ProductsController = class ProductsController {
     }
     findOne(slug) {
         return this.productsService.findOne(slug);
+    }
+    getInteractionStatus(req, id) {
+        return this.productsService.getInteractionStatus(req.user.id, id);
+    }
+    setInteraction(req, id, body) {
+        return this.productsService.setInteraction(req.user.id, id, body.isLike);
     }
     getAnalytics(id) {
         return this.productsService.getAnalytics(id);
@@ -109,7 +117,27 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.UseGuards)(admin_key_guard_1.AdminKeyGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)(':id/interaction-status'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "getInteractionStatus", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)(':id/interaction'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "setInteraction", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
     (0, common_1.Get)(':id/analytics'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -117,7 +145,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "getAnalytics", null);
 __decorate([
-    (0, common_1.UseGuards)(admin_key_guard_1.AdminKeyGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
     (0, common_1.Post)('categories'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -125,7 +154,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "createCategory", null);
 __decorate([
-    (0, common_1.UseGuards)(admin_key_guard_1.AdminKeyGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
     (0, common_1.Patch)('categories/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -134,7 +164,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "updateCategory", null);
 __decorate([
-    (0, common_1.UseGuards)(admin_key_guard_1.AdminKeyGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -142,7 +173,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "create", null);
 __decorate([
-    (0, common_1.UseGuards)(admin_key_guard_1.AdminKeyGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -151,7 +183,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "update", null);
 __decorate([
-    (0, common_1.UseGuards)(admin_key_guard_1.AdminKeyGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

@@ -11,9 +11,10 @@ import { UploadModule } from './upload/upload.module.js';
 import { CartModule } from './cart/cart.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ProductRequestsModule } from './product-requests/product-requests.module';
+import { BillboardsModule } from './billboards/billboards.module.js';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, ProductsModule, OrdersModule, WatchlistModule, UploadModule, CartModule, ReviewsModule, ProductRequestsModule],
+  imports: [PrismaModule, AuthModule, UsersModule, ProductsModule, OrdersModule, WatchlistModule, UploadModule, CartModule, ReviewsModule, ProductRequestsModule, BillboardsModule],
   controllers: [AppController],
   providers: [AppService],
 })

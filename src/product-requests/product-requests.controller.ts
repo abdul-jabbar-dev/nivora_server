@@ -1,6 +1,8 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Param, Patch, Req } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ProductRequestsService } from './product-requests.service';
-import { AdminKeyGuard } from '../auth/admin-key.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('product-requests')
 export class ProductRequestsController {
@@ -11,9 +13,31 @@ export class ProductRequestsController {
     return this.productRequestsService.create(createRequestDto);
   }
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard)
+  @Get('my-requests')
+  findMyRequests(@Req() req: any) {
+    const userId = req.user.id || req.user.sub;
+    return this.productRequestsService.findByUserId(userId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Get()
   findAll() {
     return this.productRequestsService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.productRequestsService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id/status')
+  updateStatus(@Param('id') id: string, @Body('status') status: string) {
+    return this.productRequestsService.updateStatus(id, status);
   }
 }

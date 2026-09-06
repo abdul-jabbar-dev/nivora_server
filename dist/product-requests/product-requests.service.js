@@ -28,6 +28,29 @@ let ProductRequestsService = class ProductRequestsService {
             include: { user: true },
         });
     }
+    async findByUserId(userId) {
+        return this.prisma.productRequest.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+    async findOne(id) {
+        const req = await this.prisma.productRequest.findUnique({
+            where: { id },
+            include: { user: true },
+        });
+        if (!req) {
+            const common = require('@nestjs/common');
+            throw new common.NotFoundException('Product request not found');
+        }
+        return req;
+    }
+    async updateStatus(id, status) {
+        return this.prisma.productRequest.update({
+            where: { id },
+            data: { status },
+        });
+    }
 };
 exports.ProductRequestsService = ProductRequestsService;
 exports.ProductRequestsService = ProductRequestsService = __decorate([

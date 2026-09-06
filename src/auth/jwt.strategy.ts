@@ -3,21 +3,23 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { passportJwtSecret } from 'jwks-rsa';
 import { PrismaService } from '../prisma/prisma.service';
+import { ENV } from '../env';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private prisma: PrismaService) {
     super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: process.env.SUPABASE_JWKS_URL as string,
+        jwksUri: ENV.SUPABASE_JWKS_URL,
       }),
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       // audience: 'authenticated',
-      // issuer: process.env.SUPABASE_URL,
-      algorithms: ['RS256', 'ES256', 'HS256'],
+      // issuer: ENV.SUPABASE_JWT_ISSUER || `https://${ENV.SUPABASE_URL?.replace('https://', '')}/auth/v1`,
+      algorithms: ['RS256', 'ES256'],
     });
   }
 

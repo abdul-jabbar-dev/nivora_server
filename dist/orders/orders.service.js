@@ -18,34 +18,68 @@ let OrdersService = class OrdersService {
         this.prisma = prisma;
     }
     async create(userId, createOrderDto) {
-        return this.prisma.order.create({
-            data: {
-                userId,
-                total: createOrderDto.total,
-                address: createOrderDto.address,
-                city: createOrderDto.city,
-                zip: createOrderDto.zip,
-                landmark: createOrderDto.landmark,
-                phoneNumber: createOrderDto.phoneNumber,
-                paymentMethod: createOrderDto.paymentMethod,
-                shippingMethod: createOrderDto.shippingMethod,
-                bkashNumber: createOrderDto.bkashNumber,
-                trxId: createOrderDto.trxId,
-                items: {
-                    create: createOrderDto.items.map((item) => ({
-                        productId: item.productId,
-                        quantity: item.quantity,
-                        price: item.price,
-                    })),
-                },
-                statusHistory: {
-                    create: {
-                        status: 'PENDING',
-                        note: 'Order placed'
-                    }
+        return this.prisma.$transaction(async (tx) => {
+            const productIds = createOrderDto.items.map((item) => item.productId);
+            const products = await tx.product.findMany({
+                where: { id: { in: productIds } }
+            });
+            const productMap = new Map(products.map(p => [p.id, p]));
+            let calculatedSubtotal = 0;
+            for (const item of createOrderDto.items) {
+                const product = productMap.get(item.productId);
+                if (!product) {
+                    throw new Error(`Product ${item.productId} not found`);
                 }
-            },
-            include: { items: true, statusHistory: true },
+                if (product.stock < item.quantity) {
+                    throw new Error(`Insufficient stock for product ${product.name}. Available: ${product.stock}`);
+                }
+                const itemPrice = product.offerPrice ?? product.price;
+                calculatedSubtotal += itemPrice * item.quantity;
+            }
+            const shipping = createOrderDto.shippingMethod === 'sameday' ? 70 : 130;
+            const finalTotal = calculatedSubtotal + shipping;
+            for (const item of createOrderDto.items) {
+                await tx.product.update({
+                    where: { id: item.productId },
+                    data: { stock: { decrement: item.quantity } }
+                });
+            }
+            const order = await tx.order.create({
+                data: {
+                    userId,
+                    total: finalTotal,
+                    address: createOrderDto.address,
+                    city: createOrderDto.city,
+                    zip: createOrderDto.zip,
+                    landmark: createOrderDto.landmark,
+                    phoneNumber: createOrderDto.phoneNumber,
+                    paymentMethod: createOrderDto.paymentMethod,
+                    shippingMethod: createOrderDto.shippingMethod,
+                    bkashNumber: createOrderDto.bkashNumber,
+                    trxId: createOrderDto.trxId,
+                    items: {
+                        create: createOrderDto.items.map((item) => ({
+                            productId: item.productId,
+                            quantity: item.quantity,
+                            price: productMap.get(item.productId).offerPrice ?? productMap.get(item.productId).price,
+                        })),
+                    },
+                    statusHistory: {
+                        create: {
+                            status: 'PENDING',
+                            note: 'Order placed'
+                        }
+                    }
+                },
+                include: { items: true, statusHistory: true },
+            });
+            const cart = await tx.cart.findUnique({ where: { userId } });
+            if (cart) {
+                await tx.cartItem.deleteMany({
+                    where: { cartId: cart.id }
+                });
+            }
+            return order;
         });
     }
     async findAllForUser(userId, page = 1, limit = 10, status, search) {
@@ -88,10 +122,15 @@ let OrdersService = class OrdersService {
             throw new common_1.NotFoundException('Order not found');
         return order;
     }
-    async getAllAdminOrders(page = 1, limit = 20) {
+    async getAllAdminOrders(page = 1, limit = 20, status) {
         const skip = (page - 1) * limit;
+        const whereClause = {};
+        if (status) {
+            whereClause.status = status.toUpperCase();
+        }
         const [orders, total] = await Promise.all([
             this.prisma.order.findMany({
+                where: whereClause,
                 skip,
                 take: Number(limit),
                 orderBy: { createdAt: 'desc' },
@@ -105,12 +144,38 @@ let OrdersService = class OrdersService {
                     statusHistory: { orderBy: { createdAt: 'desc' } }
                 }
             }),
-            this.prisma.order.count()
+            this.prisma.order.count({ where: whereClause })
         ]);
         return {
             orders,
             total,
             totalPages: Math.ceil(total / limit)
+        };
+    }
+    async getDashboardStats() {
+        const [totalOrders, pendingOrders, totalCustomers, recentOrders, revenueData] = await Promise.all([
+            this.prisma.order.count(),
+            this.prisma.order.count({ where: { status: 'PENDING' } }),
+            this.prisma.user.count({ where: { role: 'CUSTOMER' } }),
+            this.prisma.order.findMany({
+                take: 5,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    user: { select: { firstName: true, lastName: true, email: true } },
+                    items: { include: { product: { select: { name: true, imageUrl: true } } } }
+                }
+            }),
+            this.prisma.order.aggregate({
+                _sum: { total: true },
+                where: { status: { not: 'CANCELLED' } }
+            })
+        ]);
+        return {
+            totalRevenue: revenueData._sum.total || 0,
+            totalOrders,
+            pendingOrders,
+            totalCustomers,
+            recentOrders
         };
     }
     async getAdminOrderById(id) {

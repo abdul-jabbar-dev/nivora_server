@@ -5,14 +5,14 @@ export declare class WatchlistController {
     add(req: any, productId: string): Promise<{
         id: string;
         createdAt: Date;
-        productId: string;
         userId: string;
+        productId: string;
     }>;
     remove(req: any, productId: string): Promise<{
         id: string;
         createdAt: Date;
-        productId: string;
         userId: string;
+        productId: string;
     }>;
     findAll(req: any): Promise<({
         product: {
@@ -20,11 +20,12 @@ export declare class WatchlistController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            newArrivalOrder: number;
-            discountOrder: number;
+            status: string;
+            price: number;
             slug: string;
             description: string | null;
-            price: number;
+            newArrivalOrder: number;
+            discountOrder: number;
             originalPrice: number | null;
             imageUrl: string;
             images: string[];
@@ -38,9 +39,10 @@ export declare class WatchlistController {
             shipping: import("@prisma/client/runtime/library").JsonValue | null;
             variants: import("@prisma/client/runtime/library").JsonValue | null;
             stock: number;
+            likesCount: number;
+            dislikesCount: number;
             categoryId: string | null;
             visibleStatus: string;
-            status: string;
             offerPrice: number | null;
             discountExpiryDate: Date | null;
             sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
@@ -49,7 +51,7 @@ export declare class WatchlistController {
     } & {
         id: string;
         createdAt: Date;
-        productId: string;
         userId: string;
+        productId: string;
     })[]>;
 }

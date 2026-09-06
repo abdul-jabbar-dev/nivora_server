@@ -1,13 +1,15 @@
 import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards, Req } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AdminKeyGuard } from '../auth/admin-key.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Get('admin/all')
   getAllReviews(
     @Query('page') page?: string,
@@ -42,7 +44,8 @@ export class ReviewsController {
     return this.reviewsService.createReview(userId, body);
   }
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Patch(':id/reply')
   addAdminReply(
     @Param('id') id: string,

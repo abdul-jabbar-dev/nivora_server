@@ -41,6 +41,61 @@ let UsersService = class UsersService {
             },
         });
     }
+    async findAll(page = 1, limit = 20) {
+        const skip = (page - 1) * limit;
+        const [users, total] = await Promise.all([
+            this.prisma.user.findMany({
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    orders: {
+                        select: { total: true, status: true }
+                    }
+                }
+            }),
+            this.prisma.user.count()
+        ]);
+        const usersWithStats = users.map(user => {
+            const successfulOrders = user.orders.filter(o => o.status !== 'CANCELLED');
+            const totalSpent = successfulOrders.reduce((sum, order) => sum + order.total, 0);
+            return {
+                ...user,
+                orderCount: user.orders.length,
+                totalSpent
+            };
+        });
+        return {
+            users: usersWithStats,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        };
+    }
+    async findOneAdmin(id) {
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+            include: {
+                orders: {
+                    orderBy: { createdAt: 'desc' },
+                    include: { items: { include: { product: true } } }
+                },
+                watchlist: {
+                    include: { product: true }
+                }
+            },
+        });
+        if (!user) {
+            const common = require('@nestjs/common');
+            throw new common.NotFoundException('User not found');
+        }
+        const successfulOrders = user.orders.filter(o => o.status !== 'CANCELLED');
+        const totalSpent = successfulOrders.reduce((sum, order) => sum + order.total, 0);
+        return {
+            ...user,
+            totalSpent
+        };
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

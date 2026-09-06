@@ -193,6 +193,87 @@ let ProductsService = class ProductsService {
             where: { id },
         });
     }
+    async getInteractionStatus(userId, productId) {
+        const orderItem = await this.prisma.orderItem.findFirst({
+            where: {
+                productId,
+                order: {
+                    userId,
+                    status: { not: 'CANCELLED' }
+                }
+            }
+        });
+        const canInteract = !!orderItem;
+        const interaction = await this.prisma.productInteraction.findUnique({
+            where: { userId_productId: { userId, productId } }
+        });
+        return {
+            canInteract,
+            interaction: interaction ? (interaction.isLike ? 'like' : 'dislike') : null
+        };
+    }
+    async setInteraction(userId, productId, isLike) {
+        const orderItem = await this.prisma.orderItem.findFirst({
+            where: {
+                productId,
+                order: {
+                    userId,
+                    status: { not: 'CANCELLED' }
+                }
+            }
+        });
+        if (!orderItem) {
+            throw new common_1.ForbiddenException('You can only interact with products you have purchased.');
+        }
+        const existing = await this.prisma.productInteraction.findUnique({
+            where: { userId_productId: { userId, productId } }
+        });
+        await this.prisma.$transaction(async (prisma) => {
+            if (existing) {
+                if (existing.isLike === isLike) {
+                    await prisma.productInteraction.delete({
+                        where: { id: existing.id }
+                    });
+                    await prisma.product.update({
+                        where: { id: productId },
+                        data: {
+                            likesCount: isLike ? { decrement: 1 } : undefined,
+                            dislikesCount: !isLike ? { decrement: 1 } : undefined
+                        }
+                    });
+                    return;
+                }
+                await prisma.productInteraction.update({
+                    where: { id: existing.id },
+                    data: { isLike }
+                });
+                await prisma.product.update({
+                    where: { id: productId },
+                    data: {
+                        likesCount: isLike ? { increment: 1 } : { decrement: 1 },
+                        dislikesCount: !isLike ? { increment: 1 } : { decrement: 1 }
+                    }
+                });
+            }
+            else {
+                await prisma.productInteraction.create({
+                    data: {
+                        userId,
+                        productId,
+                        isLike
+                    }
+                });
+                await prisma.product.update({
+                    where: { id: productId },
+                    data: {
+                        likesCount: isLike ? { increment: 1 } : undefined,
+                        dislikesCount: !isLike ? { increment: 1 } : undefined
+                    }
+                });
+            }
+        });
+        return { success: true };
+    }
 };
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([

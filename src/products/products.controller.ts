@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AdminKeyGuard } from '../auth/admin-key.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('products')
 export class ProductsController {
@@ -52,37 +53,55 @@ export class ProductsController {
     return this.productsService.findOne(slug);
   }
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/interaction-status')
+  getInteractionStatus(@Request() req, @Param('id') id: string) {
+    return this.productsService.getInteractionStatus(req.user.id, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/interaction')
+  setInteraction(@Request() req, @Param('id') id: string, @Body() body: { isLike: boolean }) {
+    return this.productsService.setInteraction(req.user.id, id, body.isLike);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Get(':id/analytics')
   getAnalytics(@Param('id') id: string) {
     return this.productsService.getAnalytics(id);
   }
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Post('categories')
   createCategory(@Body() data: any) {
     return this.productsService.createCategory(data);
   }
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Patch('categories/:id')
   updateCategory(@Param('id') id: string, @Body() data: any) {
     return this.productsService.updateCategory(id, data);
   }
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Post()
   create(@Body() createProductDto: any) {
     return this.productsService.create(createProductDto);
   }
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: any) {
     return this.productsService.update(id, updateProductDto);
   }
 
-  @UseGuards(AdminKeyGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);

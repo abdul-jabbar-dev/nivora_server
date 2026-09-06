@@ -17,9 +17,9 @@ export declare class ReviewsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            rating: number;
-            productId: string;
             userId: string;
+            productId: string;
+            rating: number;
             message: string | null;
             media: string[];
             adminReply: string | null;
@@ -38,9 +38,9 @@ export declare class ReviewsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            rating: number;
-            productId: string;
             userId: string;
+            productId: string;
+            rating: number;
             message: string | null;
             media: string[];
             adminReply: string | null;
@@ -57,9 +57,9 @@ export declare class ReviewsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        rating: number;
-        productId: string;
         userId: string;
+        productId: string;
+        rating: number;
         message: string | null;
         media: string[];
         adminReply: string | null;
@@ -70,9 +70,9 @@ export declare class ReviewsController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        rating: number;
-        productId: string;
         userId: string;
+        productId: string;
+        rating: number;
         message: string | null;
         media: string[];
         adminReply: string | null;
