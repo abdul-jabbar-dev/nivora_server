@@ -10,4 +10,5 @@ export declare const ENV: {
     STORAGE_PROVIDER: string;
     BACKEND_URL: string;
     SUPABASE_BUCKET: string;
+    ADMIN_EMAIL: string;
 };

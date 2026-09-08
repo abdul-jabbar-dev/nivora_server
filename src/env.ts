@@ -13,4 +13,5 @@ export const ENV = {
   STORAGE_PROVIDER: process.env.STORAGE_PROVIDER || 's3',
   BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:3005',
   SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || 'products',
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin@gmail.com',
 };

@@ -13,6 +13,7 @@ exports.RolesGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const roles_decorator_1 = require("./roles.decorator");
+const env_1 = require("../env");
 let RolesGuard = class RolesGuard {
     reflector;
     constructor(reflector) {
@@ -27,7 +28,7 @@ let RolesGuard = class RolesGuard {
             return true;
         }
         const { user } = context.switchToHttp().getRequest();
-        if (user?.email === 'abdul.jabbar.dev@gmail.com' || user?.email === 'admin@gmail.com')
+        if (user?.email === env_1.ENV.ADMIN_EMAIL)
             return true;
         const isRoleMatched = requiredRoles.some((role) => user?.role === role);
         if (!isRoleMatched) {

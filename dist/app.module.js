@@ -21,12 +21,13 @@ const cart_module_1 = require("./cart/cart.module");
 const reviews_module_1 = require("./reviews/reviews.module");
 const product_requests_module_1 = require("./product-requests/product-requests.module");
 const billboards_module_js_1 = require("./billboards/billboards.module.js");
+const site_settings_module_js_1 = require("./site-settings/site-settings.module.js");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_js_1.PrismaModule, auth_module_js_1.AuthModule, users_module_js_1.UsersModule, products_module_js_1.ProductsModule, orders_module_js_1.OrdersModule, watchlist_module_js_1.WatchlistModule, upload_module_js_1.UploadModule, cart_module_1.CartModule, reviews_module_1.ReviewsModule, product_requests_module_1.ProductRequestsModule, billboards_module_js_1.BillboardsModule],
+        imports: [prisma_module_js_1.PrismaModule, auth_module_js_1.AuthModule, users_module_js_1.UsersModule, products_module_js_1.ProductsModule, orders_module_js_1.OrdersModule, watchlist_module_js_1.WatchlistModule, upload_module_js_1.UploadModule, cart_module_1.CartModule, reviews_module_1.ReviewsModule, product_requests_module_1.ProductRequestsModule, billboards_module_js_1.BillboardsModule, site_settings_module_js_1.SiteSettingsModule],
         controllers: [app_controller_js_1.AppController],
         providers: [app_service_js_1.AppService],
     })
