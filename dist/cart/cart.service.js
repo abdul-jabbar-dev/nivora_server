@@ -53,13 +53,16 @@ let CartService = class CartService {
         });
         const combinedItems = new Map();
         for (const item of items) {
+            if (!item || !item.productId)
+                continue;
             const variantStr = item.variant || '';
             const key = `${item.productId}_${variantStr}`;
+            const qty = Number(item.quantity) || 1;
             if (combinedItems.has(key)) {
-                combinedItems.get(key).quantity += item.quantity;
+                combinedItems.get(key).quantity += qty;
             }
             else {
-                combinedItems.set(key, { ...item, variantStr });
+                combinedItems.set(key, { ...item, quantity: qty, variantStr });
             }
         }
         for (const item of combinedItems.values()) {
@@ -74,11 +77,8 @@ let CartService = class CartService {
                 });
             }
             catch (e) {
-                if (e.code === 'P2003' || e.code === 'P2002') {
-                    console.warn(`Skipping invalid cart item sync: ${item.productId}`);
-                    continue;
-                }
-                throw e;
+                console.warn(`Skipping invalid cart item sync (${item.productId}): ${e.message}`);
+                continue;
             }
         }
         return this.getCart(userId);

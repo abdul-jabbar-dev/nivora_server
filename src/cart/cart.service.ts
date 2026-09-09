@@ -49,12 +49,14 @@ export class CartService {
     // Combine quantities for duplicate items in the incoming array
     const combinedItems = new Map<string, any>();
     for (const item of items) {
+      if (!item || !item.productId) continue;
       const variantStr = item.variant || '';
       const key = `${item.productId}_${variantStr}`;
+      const qty = Number(item.quantity) || 1;
       if (combinedItems.has(key)) {
-        combinedItems.get(key).quantity += item.quantity;
+        combinedItems.get(key).quantity += qty;
       } else {
-        combinedItems.set(key, { ...item, variantStr });
+        combinedItems.set(key, { ...item, quantity: qty, variantStr });
       }
     }
 
@@ -69,13 +71,10 @@ export class CartService {
             quantity: item.quantity,
           }
         });
-      } catch (e) {
-        // Ignore P2003 (product does not exist) or P2002 (shouldn't happen now)
-        if ((e as any).code === 'P2003' || (e as any).code === 'P2002') {
-          console.warn(`Skipping invalid cart item sync: ${item.productId}`);
-          continue;
-        }
-        throw e;
+      } catch (e: any) {
+        // Ignore errors if product was deleted or duplicate/invalid
+        console.warn(`Skipping invalid cart item sync (${item.productId}): ${e.message}`);
+        continue;
       }
     }
 

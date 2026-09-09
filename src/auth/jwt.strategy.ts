@@ -24,36 +24,50 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    if (!payload.sub) {
-      throw new UnauthorizedException();
+    if (!payload?.sub) {
+      throw new UnauthorizedException('Invalid token');
     }
-    let user = await this.prisma.user.findUnique({
-      where: { id: payload.sub },
-    });
-    
-    // If not found in our DB, create the user
-    if (!user) {
-      const email = payload.email || `${payload.sub}@no-email.com`;
-      let firstName = null;
-      let lastName = null;
+
+    try {
+      let user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
       
-      const fullName = payload.user_metadata?.full_name || payload.user_metadata?.name;
-      if (fullName) {
-        const parts = fullName.split(' ');
-        firstName = parts[0];
-        lastName = parts.slice(1).join(' ') || null;
+      const email = payload.email || `${payload.sub}@no-email.com`;
+
+      // If not found by sub, check if user exists with the same email
+      if (!user) {
+        user = await this.prisma.user.findUnique({
+          where: { email },
+        });
       }
 
-      user = await this.prisma.user.create({
-        data: {
-          id: payload.sub,
-          email: email,
-          firstName,
-          lastName,
-        },
-      });
+      // If still not found in our DB, create the user
+      if (!user) {
+        let firstName = null;
+        let lastName = null;
+        
+        const fullName = payload.user_metadata?.full_name || payload.user_metadata?.name;
+        if (fullName) {
+          const parts = fullName.split(' ');
+          firstName = parts[0];
+          lastName = parts.slice(1).join(' ') || null;
+        }
+
+        user = await this.prisma.user.create({
+          data: {
+            id: payload.sub,
+            email: email,
+            firstName,
+            lastName,
+          },
+        });
+      }
+      
+      return user;
+    } catch (err: any) {
+      console.error('JwtStrategy error:', err.message);
+      throw new UnauthorizedException('Authentication failed');
     }
-    
-    return user;
   }
 }

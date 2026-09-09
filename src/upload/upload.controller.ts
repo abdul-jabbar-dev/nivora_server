@@ -16,4 +16,15 @@ export class UploadController {
     const urls = await this.uploadService.uploadFiles(files, targetFolder);
     return { urls };
   }
+
+  @Post('cleanup-temp')
+  async cleanupTemp(@Body('maxAgeMinutes') maxAgeMinutes?: number) {
+    const ageMs = maxAgeMinutes !== undefined ? maxAgeMinutes * 60 * 1000 : 0;
+    const result = this.uploadService.clearTempFiles(ageMs);
+    return {
+      success: true,
+      message: `Cleared ${result.deletedCount} temporary file(s)`,
+      errors: result.errors,
+    };
+  }
 }

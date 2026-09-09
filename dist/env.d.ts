@@ -11,4 +11,5 @@ export declare const ENV: {
     BACKEND_URL: string;
     SUPABASE_BUCKET: string;
     ADMIN_EMAIL: string;
+    ADMIN_SECRET: string;
 };

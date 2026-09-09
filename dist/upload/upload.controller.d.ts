@@ -5,4 +5,9 @@ export declare class UploadController {
     uploadFiles(files: any[], folder?: string): Promise<{
         urls: string[];
     }>;
+    cleanupTemp(maxAgeMinutes?: number): Promise<{
+        success: boolean;
+        message: string;
+        errors: string[];
+    }>;
 }

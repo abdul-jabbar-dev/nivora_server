@@ -46,8 +46,6 @@ export declare class OrdersController {
                     price: number;
                     slug: string;
                     description: string | null;
-                    newArrivalOrder: number;
-                    discountOrder: number;
                     originalPrice: number | null;
                     imageUrl: string;
                     images: string[];
@@ -67,6 +65,8 @@ export declare class OrdersController {
                     visibleStatus: string;
                     offerPrice: number | null;
                     discountExpiryDate: Date | null;
+                    newArrivalOrder: number;
+                    discountOrder: number;
                     sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                     expectedArrivalDate: Date | null;
                 };
@@ -209,8 +209,6 @@ export declare class OrdersController {
                 price: number;
                 slug: string;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
                 imageUrl: string;
                 images: string[];
@@ -230,6 +228,8 @@ export declare class OrdersController {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
@@ -303,8 +303,6 @@ export declare class OrdersController {
                 price: number;
                 slug: string;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
                 imageUrl: string;
                 images: string[];
@@ -324,6 +322,8 @@ export declare class OrdersController {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };

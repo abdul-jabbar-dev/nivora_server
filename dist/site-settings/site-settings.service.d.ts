@@ -8,6 +8,7 @@ export declare class SiteSettingsService {
         createdAt: Date;
         updatedAt: Date;
         address: string | null;
+        bkashNumber: string | null;
         facebookUrl: string | null;
         instagramUrl: string | null;
         freeShippingThreshold: number;
@@ -20,6 +21,7 @@ export declare class SiteSettingsService {
         createdAt: Date;
         updatedAt: Date;
         address: string | null;
+        bkashNumber: string | null;
         facebookUrl: string | null;
         instagramUrl: string | null;
         freeShippingThreshold: number;

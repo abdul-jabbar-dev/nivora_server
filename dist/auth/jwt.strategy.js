@@ -33,32 +33,43 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         this.prisma = prisma;
     }
     async validate(payload) {
-        if (!payload.sub) {
-            throw new common_1.UnauthorizedException();
+        if (!payload?.sub) {
+            throw new common_1.UnauthorizedException('Invalid token');
         }
-        let user = await this.prisma.user.findUnique({
-            where: { id: payload.sub },
-        });
-        if (!user) {
-            const email = payload.email || `${payload.sub}@no-email.com`;
-            let firstName = null;
-            let lastName = null;
-            const fullName = payload.user_metadata?.full_name || payload.user_metadata?.name;
-            if (fullName) {
-                const parts = fullName.split(' ');
-                firstName = parts[0];
-                lastName = parts.slice(1).join(' ') || null;
-            }
-            user = await this.prisma.user.create({
-                data: {
-                    id: payload.sub,
-                    email: email,
-                    firstName,
-                    lastName,
-                },
+        try {
+            let user = await this.prisma.user.findUnique({
+                where: { id: payload.sub },
             });
+            const email = payload.email || `${payload.sub}@no-email.com`;
+            if (!user) {
+                user = await this.prisma.user.findUnique({
+                    where: { email },
+                });
+            }
+            if (!user) {
+                let firstName = null;
+                let lastName = null;
+                const fullName = payload.user_metadata?.full_name || payload.user_metadata?.name;
+                if (fullName) {
+                    const parts = fullName.split(' ');
+                    firstName = parts[0];
+                    lastName = parts.slice(1).join(' ') || null;
+                }
+                user = await this.prisma.user.create({
+                    data: {
+                        id: payload.sub,
+                        email: email,
+                        firstName,
+                        lastName,
+                    },
+                });
+            }
+            return user;
         }
-        return user;
+        catch (err) {
+            console.error('JwtStrategy error:', err.message);
+            throw new common_1.UnauthorizedException('Authentication failed');
+        }
     }
 };
 exports.JwtStrategy = JwtStrategy;

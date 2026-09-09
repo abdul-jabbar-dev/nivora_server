@@ -49,6 +49,8 @@ const path = __importStar(require("path"));
 const env_1 = require("../env");
 let UploadService = UploadService_1 = class UploadService {
     logger = new common_1.Logger(UploadService_1.name);
+    tempDir = path.join(process.cwd(), 'uploads', 'temp');
+    cleanupInterval = null;
     s3Client = new client_s3_1.S3Client({
         region: env_1.ENV.S3_REGION,
         endpoint: env_1.ENV.S3_ENDPOINT,
@@ -58,33 +60,115 @@ let UploadService = UploadService_1 = class UploadService {
         },
         forcePathStyle: true,
     });
+    onModuleInit() {
+        this.ensureDir(this.tempDir);
+        this.clearTempFiles(15 * 60 * 1000);
+        this.cleanupInterval = setInterval(() => {
+            this.clearTempFiles(15 * 60 * 1000);
+        }, 30 * 60 * 1000);
+    }
+    onModuleDestroy() {
+        if (this.cleanupInterval) {
+            clearInterval(this.cleanupInterval);
+            this.cleanupInterval = null;
+        }
+    }
+    ensureDir(dirPath) {
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
+        }
+    }
+    clearTempFiles(maxAgeMs = 15 * 60 * 1000) {
+        let deletedCount = 0;
+        const errors = [];
+        try {
+            if (!fs.existsSync(this.tempDir))
+                return { deletedCount: 0, errors: [] };
+            const files = fs.readdirSync(this.tempDir);
+            const now = Date.now();
+            for (const file of files) {
+                const filePath = path.join(this.tempDir, file);
+                try {
+                    const stats = fs.statSync(filePath);
+                    if (stats.isFile() && (now - stats.mtimeMs > maxAgeMs)) {
+                        fs.unlinkSync(filePath);
+                        deletedCount++;
+                        this.logger.log(`Auto-cleared temp file: ${file}`);
+                    }
+                }
+                catch (err) {
+                    errors.push(`Failed to delete ${file}: ${err.message}`);
+                }
+            }
+        }
+        catch (err) {
+            this.logger.error(`Error reading temp directory: ${err.message}`);
+        }
+        return { deletedCount, errors };
+    }
     async uploadFiles(files, folder) {
         return Promise.all(files.map(file => this.uploadSingleFile(file, folder)));
     }
     async uploadSingleFile(file, folder) {
-        const filename = `${folder}/${(0, uuid_1.v4)()}-${file.originalname.replace(/\\s+/g, '-')}`;
+        const sanitizedName = (file.originalname || 'image')
+            .trim()
+            .replace(/[^a-zA-Z0-9.-]/g, '-');
+        const filename = `${folder}/${(0, uuid_1.v4)()}-${sanitizedName}`;
         const provider = env_1.ENV.STORAGE_PROVIDER;
-        if (provider === 'local') {
-            const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-            if (!fs.existsSync(uploadDir)) {
-                fs.mkdirSync(uploadDir, { recursive: true });
+        let tempFilePath = null;
+        const abortController = new AbortController();
+        const timeout = setTimeout(() => {
+            abortController.abort();
+        }, 25000);
+        try {
+            if (provider === 'local') {
+                const uploadDir = path.join(process.cwd(), 'uploads', folder);
+                this.ensureDir(uploadDir);
+                const filePath = path.join(process.cwd(), 'uploads', filename);
+                tempFilePath = filePath;
+                await fs.promises.writeFile(filePath, file.buffer);
+                tempFilePath = null;
+                const baseUrl = env_1.ENV.BACKEND_URL;
+                return `${baseUrl}/uploads/${filename}`;
             }
-            const filePath = path.join(uploadDir, filename);
-            fs.writeFileSync(filePath, file.buffer);
-            const baseUrl = env_1.ENV.BACKEND_URL;
-            return `${baseUrl}/uploads/${filename}`;
+            else {
+                const tempName = `temp-${(0, uuid_1.v4)()}-${sanitizedName}`;
+                tempFilePath = path.join(this.tempDir, tempName);
+                await fs.promises.writeFile(tempFilePath, file.buffer);
+                const bucket = env_1.ENV.SUPABASE_BUCKET;
+                await this.s3Client.send(new client_s3_1.PutObjectCommand({
+                    Bucket: bucket,
+                    Key: filename,
+                    Body: file.buffer,
+                    ContentType: file.mimetype,
+                    ACL: 'public-read',
+                }), { abortSignal: abortController.signal });
+                if (tempFilePath && fs.existsSync(tempFilePath)) {
+                    await fs.promises.unlink(tempFilePath).catch(() => { });
+                    tempFilePath = null;
+                }
+                const baseUrl = env_1.ENV.SUPABASE_URL;
+                return `${baseUrl}/storage/v1/object/public/${bucket}/${filename}`;
+            }
         }
-        else {
-            const bucket = env_1.ENV.SUPABASE_BUCKET;
-            await this.s3Client.send(new client_s3_1.PutObjectCommand({
-                Bucket: bucket,
-                Key: filename,
-                Body: file.buffer,
-                ContentType: file.mimetype,
-                ACL: 'public-read',
-            }));
-            const baseUrl = env_1.ENV.SUPABASE_URL;
-            return `${baseUrl}/storage/v1/object/public/${bucket}/${filename}`;
+        catch (error) {
+            this.logger.error(`Upload failed or timed out for file ${filename}: ${error.message}`);
+            if (tempFilePath && fs.existsSync(tempFilePath)) {
+                try {
+                    await fs.promises.unlink(tempFilePath);
+                    this.logger.log(`Cleaned up temp file after error: ${tempFilePath}`);
+                }
+                catch (cleanupErr) {
+                    this.logger.warn(`Failed to cleanup temp file: ${cleanupErr.message}`);
+                }
+            }
+            if (abortController.signal.aborted) {
+                throw new Error(`Upload timed out after 25 seconds for ${file.originalname}`);
+            }
+            throw error;
+        }
+        finally {
+            clearTimeout(timeout);
         }
     }
 };

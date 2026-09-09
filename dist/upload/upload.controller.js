@@ -29,6 +29,15 @@ let UploadController = class UploadController {
         const urls = await this.uploadService.uploadFiles(files, targetFolder);
         return { urls };
     }
+    async cleanupTemp(maxAgeMinutes) {
+        const ageMs = maxAgeMinutes !== undefined ? maxAgeMinutes * 60 * 1000 : 0;
+        const result = this.uploadService.clearTempFiles(ageMs);
+        return {
+            success: true,
+            message: `Cleared ${result.deletedCount} temporary file(s)`,
+            errors: result.errors,
+        };
+    }
 };
 exports.UploadController = UploadController;
 __decorate([
@@ -40,6 +49,13 @@ __decorate([
     __metadata("design:paramtypes", [Array, String]),
     __metadata("design:returntype", Promise)
 ], UploadController.prototype, "uploadFiles", null);
+__decorate([
+    (0, common_1.Post)('cleanup-temp'),
+    __param(0, (0, common_1.Body)('maxAgeMinutes')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UploadController.prototype, "cleanupTemp", null);
 exports.UploadController = UploadController = __decorate([
     (0, common_1.Controller)('upload'),
     __metadata("design:paramtypes", [upload_service_1.UploadService])
