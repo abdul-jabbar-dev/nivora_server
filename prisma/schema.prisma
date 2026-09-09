@@ -259,6 +259,7 @@ model SiteSetting {
   contactPhone          String?
   whatsapp              String?
   address               String?
+  bkashNumber           String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }
