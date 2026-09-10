@@ -20,15 +20,56 @@ export class ProductsService {
     
     let where: any = {};
     if (category && category !== 'all') {
-      where.category = { slug: category };
+      const cat = await this.prisma.category.findUnique({
+        where: { slug: category },
+        include: { children: { include: { children: true } } },
+      });
+      if (cat) {
+        const catIds = [cat.id];
+        if (cat.children?.length) {
+          for (const child of cat.children) {
+            catIds.push(child.id);
+            if (child.children?.length) {
+              for (const grandchild of child.children) {
+                catIds.push(grandchild.id);
+              }
+            }
+          }
+        }
+        where.categoryId = { in: catIds };
+      } else {
+        where.category = { slug: category };
+      }
     }
 
-    if (q) {
-      where.OR = [
-        { name: { contains: q, mode: 'insensitive' } },
-        { description: { contains: q, mode: 'insensitive' } },
-        { slug: { contains: q, mode: 'insensitive' } },
-      ];
+    if (q && q.trim()) {
+      const cleanQ = q.trim();
+      const words = cleanQ.split(/\s+/).filter(Boolean);
+
+      if (words.length > 1) {
+        // Multi-word search: every word must match at least one searchable field
+        where.AND = [
+          ...(where.AND || []),
+          ...words.map((word) => ({
+            OR: [
+              { name: { contains: word, mode: 'insensitive' } },
+              { description: { contains: word, mode: 'insensitive' } },
+              { brand: { contains: word, mode: 'insensitive' } },
+              { slug: { contains: word, mode: 'insensitive' } },
+              { category: { name: { contains: word, mode: 'insensitive' } } },
+            ],
+          })),
+        ];
+      } else {
+        // Single word or phrase search
+        where.OR = [
+          { name: { contains: cleanQ, mode: 'insensitive' } },
+          { description: { contains: cleanQ, mode: 'insensitive' } },
+          { brand: { contains: cleanQ, mode: 'insensitive' } },
+          { slug: { contains: cleanQ, mode: 'insensitive' } },
+          { category: { name: { contains: cleanQ, mode: 'insensitive' } } },
+        ];
+      }
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
@@ -56,9 +97,9 @@ export class ProductsService {
       orderBy = [{ discountOrder: 'asc' }, { createdAt: 'desc' }];
     } else if (sort === 'newest') {
       orderBy = { isNew: 'desc' };
-    } else if (sort === 'price-low') {
+    } else if (sort === 'price-low' || sort === 'price_asc') {
       orderBy = { price: 'asc' };
-    } else if (sort === 'price-high') {
+    } else if (sort === 'price-high' || sort === 'price_desc') {
       orderBy = { price: 'desc' };
     } else if (sort === 'featured') {
       orderBy = { isTrending: 'desc' };
@@ -85,9 +126,18 @@ export class ProductsService {
   }
 
   async getCategories() {
-    return this.prisma.category.findMany({
+    const categories = await this.prisma.category.findMany({
       orderBy: { name: 'asc' },
+      include: {
+        _count: {
+          select: { products: true },
+        },
+      },
     });
+    return categories.map((c) => ({
+      ...c,
+      productCount: c._count?.products ?? 0,
+    }));
   }
 
   async getTrending() {
@@ -205,93 +255,71 @@ export class ProductsService {
   }
 
   async getInteractionStatus(userId: string, productId: string) {
-    const orderItem = await this.prisma.orderItem.findFirst({
+    const deliveredOrderItem = await this.prisma.orderItem.findFirst({
       where: {
         productId,
         order: {
           userId,
-          status: { not: 'CANCELLED' }
+          status: 'DELIVERED'
         }
       }
     });
 
-    const canInteract = !!orderItem;
+    const isDelivered = !!deliveredOrderItem;
 
     const interaction = await this.prisma.productInteraction.findUnique({
       where: { userId_productId: { userId, productId } }
     });
 
+    const hasVoted = !!interaction;
+    const canInteract = isDelivered && !hasVoted;
+
     return {
       canInteract,
+      hasVoted,
+      isDelivered,
       interaction: interaction ? (interaction.isLike ? 'like' : 'dislike') : null
     };
   }
 
   async setInteraction(userId: string, productId: string, isLike: boolean) {
-    const orderItem = await this.prisma.orderItem.findFirst({
+    const deliveredOrderItem = await this.prisma.orderItem.findFirst({
       where: {
         productId,
         order: {
           userId,
-          status: { not: 'CANCELLED' }
+          status: 'DELIVERED'
         }
       }
     });
 
-    if (!orderItem) {
-      throw new ForbiddenException('You can only interact with products you have purchased.');
+    if (!deliveredOrderItem) {
+      throw new ForbiddenException('You can only like or dislike a product after your order is delivered.');
     }
 
     const existing = await this.prisma.productInteraction.findUnique({
       where: { userId_productId: { userId, productId } }
     });
 
-    await this.prisma.$transaction(async (prisma) => {
-      if (existing) {
-        if (existing.isLike === isLike) {
-          // Toggle off
-          await prisma.productInteraction.delete({
-            where: { id: existing.id }
-          });
-          await prisma.product.update({
-            where: { id: productId },
-            data: {
-              likesCount: isLike ? { decrement: 1 } : undefined,
-              dislikesCount: !isLike ? { decrement: 1 } : undefined
-            }
-          });
-          return;
-        }
+    if (existing) {
+      throw new ForbiddenException('You can only vote once per product.');
+    }
 
-        // Change vote
-        await prisma.productInteraction.update({
-          where: { id: existing.id },
-          data: { isLike }
-        });
-        await prisma.product.update({
-          where: { id: productId },
-          data: {
-            likesCount: isLike ? { increment: 1 } : { decrement: 1 },
-            dislikesCount: !isLike ? { increment: 1 } : { decrement: 1 }
-          }
-        });
-      } else {
-        // New vote
-        await prisma.productInteraction.create({
-          data: {
-            userId,
-            productId,
-            isLike
-          }
-        });
-        await prisma.product.update({
-          where: { id: productId },
-          data: {
-            likesCount: isLike ? { increment: 1 } : undefined,
-            dislikesCount: !isLike ? { increment: 1 } : undefined
-          }
-        });
-      }
+    await this.prisma.$transaction(async (prisma) => {
+      await prisma.productInteraction.create({
+        data: {
+          userId,
+          productId,
+          isLike
+        }
+      });
+      await prisma.product.update({
+        where: { id: productId },
+        data: {
+          likesCount: isLike ? { increment: 1 } : undefined,
+          dislikesCount: !isLike ? { increment: 1 } : undefined
+        }
+      });
     });
 
     return { success: true };

@@ -59,6 +59,10 @@ export declare class ProductsService {
         totalPages: number;
     }>;
     getCategories(): Promise<{
+        productCount: number;
+        _count: {
+            products: number;
+        };
         id: string;
         name: string;
         slug: string;
@@ -366,6 +370,8 @@ export declare class ProductsService {
     }>;
     getInteractionStatus(userId: string, productId: string): Promise<{
         canInteract: boolean;
+        hasVoted: boolean;
+        isDelivered: boolean;
         interaction: string;
     }>;
     setInteraction(userId: string, productId: string, isLike: boolean): Promise<{

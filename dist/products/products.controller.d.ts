@@ -49,6 +49,10 @@ export declare class ProductsController {
         totalPages: number;
     }>;
     getCategories(): Promise<{
+        productCount: number;
+        _count: {
+            products: number;
+        };
         id: string;
         name: string;
         slug: string;
@@ -184,6 +188,8 @@ export declare class ProductsController {
     }>;
     getInteractionStatus(req: any, id: string): Promise<{
         canInteract: boolean;
+        hasVoted: boolean;
+        isDelivered: boolean;
         interaction: string;
     }>;
     setInteraction(req: any, id: string, body: {

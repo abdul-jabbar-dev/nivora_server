@@ -2,7 +2,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export declare class ReviewsService {
     private prisma;
     constructor(prisma: PrismaService);
-    getProductReviews(productId: string, page?: number, limit?: number): Promise<{
+    getProductReviews(productId: string, page?: number, limit?: number, ratingFilter?: number): Promise<{
         reviews: ({
             user: {
                 id: string;
@@ -22,16 +22,26 @@ export declare class ReviewsService {
         })[];
         total: number;
         totalPages: number;
+        totalReviews: number;
+        averageRating: number;
+        distribution: {
+            stars: number;
+            count: number;
+            percentage: number;
+        }[];
     }>;
-    getAllReviews(page?: number, limit?: number): Promise<{
+    getAllReviews(page?: number, limit?: number, ratingFilter?: number): Promise<{
         reviews: ({
             user: {
                 id: string;
+                email: string;
                 firstName: string;
                 lastName: string;
             };
             product: {
+                id: string;
                 name: string;
+                slug: string;
                 imageUrl: string;
             };
         } & {
@@ -47,8 +57,43 @@ export declare class ReviewsService {
         })[];
         total: number;
         totalPages: number;
+        totalOverall: number;
+        averageOverall: number;
+    }>;
+    checkEligibility(userId: string, productId: string): Promise<{
+        canReview: boolean;
+        hasPurchased: boolean;
+        isAdmin: boolean;
+        existingReview: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            productId: string;
+            rating: number;
+            message: string | null;
+            media: string[];
+            adminReply: string | null;
+        };
+        message: string;
     }>;
     createReview(userId: string, data: {
+        productId: string;
+        rating: number;
+        message?: string;
+        media?: string[];
+    }): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        productId: string;
+        rating: number;
+        message: string | null;
+        media: string[];
+        adminReply: string | null;
+    }>;
+    createOrUpdateReview(userId: string, data: {
         productId: string;
         rating: number;
         message?: string;
@@ -75,5 +120,12 @@ export declare class ReviewsService {
         media: string[];
         adminReply: string | null;
     }>;
-    private updateProductRating;
+    deleteReview(reviewId: string, userId?: string, isAdmin?: boolean): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    updateProductRating(productId: string): Promise<{
+        rating: number;
+        reviewCount: number;
+    }>;
 }
