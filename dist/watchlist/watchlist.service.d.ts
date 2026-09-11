@@ -23,11 +23,13 @@ export declare class WatchlistService {
             status: string;
             price: number;
             slug: string;
-            description: string | null;
-            originalPrice: number | null;
             imageUrl: string;
-            images: string[];
             brand: string | null;
+            description: string | null;
+            newArrivalOrder: number;
+            discountOrder: number;
+            originalPrice: number | null;
+            images: string[];
             rating: number;
             reviewCount: number;
             isNew: boolean;
@@ -43,8 +45,6 @@ export declare class WatchlistService {
             visibleStatus: string;
             offerPrice: number | null;
             discountExpiryDate: Date | null;
-            newArrivalOrder: number;
-            discountOrder: number;
             sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
             expectedArrivalDate: Date | null;
         };

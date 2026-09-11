@@ -40,7 +40,19 @@ const path_1 = require("path");
 const env_1 = require("./env");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_js_1.AppModule);
-    app.enableCors();
+    app.use(express.json({ limit: '50mb' }));
+    app.use(express.urlencoded({ limit: '50mb', extended: true }));
+    app.enableCors({
+        origin: [
+            'https://nivora.abduljabbartech.me',
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://localhost:3005',
+        ],
+        credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
+    });
     app.use('/uploads', express.static((0, path_1.join)(process.cwd(), 'uploads')));
     await app.listen(env_1.ENV.PORT);
 }
