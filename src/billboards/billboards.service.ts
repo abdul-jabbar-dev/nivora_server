@@ -42,6 +42,9 @@ export class BillboardsService {
   }
 
   async remove(id: string) {
+    const billboard = await this.prisma.billboard.findUnique({ where: { id } });
+    if (!billboard) throw new NotFoundException(`Billboard with ID ${id} not found`);
+
     return this.prisma.billboard.delete({
       where: { id },
     });

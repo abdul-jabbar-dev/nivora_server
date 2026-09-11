@@ -63,6 +63,9 @@ let ProductsController = class ProductsController {
     updateCategory(id, data) {
         return this.productsService.updateCategory(id, data);
     }
+    removeCategory(id) {
+        return this.productsService.deleteCategory(id);
+    }
     create(createProductDto) {
         return this.productsService.create(createProductDto);
     }
@@ -163,6 +166,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "updateCategory", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
+    (0, common_1.Delete)('categories/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "removeCategory", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('ADMIN'),

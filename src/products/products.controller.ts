@@ -88,6 +88,13 @@ export class ProductsController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @Delete('categories/:id')
+  removeCategory(@Param('id') id: string) {
+    return this.productsService.deleteCategory(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Post()
   create(@Body() createProductDto: any) {
     return this.productsService.create(createProductDto);

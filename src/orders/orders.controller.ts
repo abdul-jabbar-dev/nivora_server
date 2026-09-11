@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -64,6 +64,13 @@ export class OrdersController {
   @Roles('ADMIN')
   updateOrderStatus(@Param('id') id: string, @Body() body: { status: string, note?: string }) {
     return this.ordersService.updateOrderStatus(id, body.status, body.note);
+  }
+
+  @Delete('admin/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  deleteAdminOrder(@Param('id') id: string) {
+    return this.ordersService.deleteOrder(id);
   }
 
   @Get(':id')

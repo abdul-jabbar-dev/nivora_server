@@ -31,8 +31,8 @@ let UsersController = class UsersController {
         const userId = req.user.id || req.user.sub;
         return this.usersService.updateProfile(userId, body);
     }
-    getAllCustomers(page, limit) {
-        return this.usersService.findAll(page ? parseInt(page) : 1, limit ? parseInt(limit) : 20);
+    getAllCustomers(page, limit, role) {
+        return this.usersService.findAll(page ? parseInt(page) : 1, limit ? parseInt(limit) : 20, role);
     }
     getCustomerById(id) {
         return this.usersService.findOneAdmin(id);
@@ -62,8 +62,9 @@ __decorate([
     (0, common_1.Get)('admin/all'),
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('role')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getAllCustomers", null);
 __decorate([

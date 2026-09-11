@@ -49,6 +49,9 @@ let BillboardsService = class BillboardsService {
         });
     }
     async remove(id) {
+        const billboard = await this.prisma.billboard.findUnique({ where: { id } });
+        if (!billboard)
+            throw new common_1.NotFoundException(`Billboard with ID ${id} not found`);
         return this.prisma.billboard.delete({
             where: { id },
         });

@@ -233,24 +233,59 @@ export class ProductsService {
       data,
     });
   }
-
+ 
   async updateCategory(id: string, data: any) {
+    const sanitizedData = { ...data };
+    if ('parentId' in sanitizedData && (!sanitizedData.parentId || sanitizedData.parentId === '')) {
+      sanitizedData.parentId = null;
+    }
     return this.prisma.category.update({
       where: { id },
-      data,
+      data: sanitizedData,
+    });
+  }
+
+  async deleteCategory(id: string) {
+    const category = await this.prisma.category.findUnique({ where: { id } });
+    if (!category) throw new NotFoundException('Category not found');
+
+    return this.prisma.$transaction(async (tx) => {
+      await tx.category.updateMany({
+        where: { parentId: id },
+        data: { parentId: category.parentId || null },
+      });
+      await tx.product.updateMany({
+        where: { categoryId: id },
+        data: { categoryId: null },
+      });
+      return tx.category.delete({
+        where: { id },
+      });
     });
   }
 
   async update(id: string, data: any) {
+    const sanitizedData = { ...data };
+    if ('categoryId' in sanitizedData && (!sanitizedData.categoryId || sanitizedData.categoryId === '')) {
+      sanitizedData.categoryId = null;
+    }
     return this.prisma.product.update({
       where: { id },
-      data,
+      data: sanitizedData,
     });
   }
 
   async remove(id: string) {
-    return this.prisma.product.delete({
-      where: { id },
+    const product = await this.prisma.product.findUnique({ where: { id } });
+    if (!product) throw new NotFoundException('Product not found');
+
+    return this.prisma.$transaction(async (tx) => {
+      await tx.watchlist.deleteMany({ where: { productId: id } });
+      await tx.cartItem.deleteMany({ where: { productId: id } });
+      await tx.review.deleteMany({ where: { productId: id } });
+      await tx.productInteraction.deleteMany({ where: { productId: id } });
+      await tx.orderItem.deleteMany({ where: { productId: id } });
+      return tx.product.delete({ where: { id } });
     });
   }
 

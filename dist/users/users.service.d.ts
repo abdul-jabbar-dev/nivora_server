@@ -54,7 +54,7 @@ export declare class UsersService {
         landmark: string | null;
         phoneNumber: string | null;
     }>;
-    findAll(page?: number, limit?: number): Promise<{
+    findAll(page?: number, limit?: number, role?: string): Promise<{
         users: {
             orderCount: number;
             totalSpent: number;
@@ -76,6 +76,8 @@ export declare class UsersService {
             phoneNumber: string | null;
         }[];
         total: number;
+        totalUsersCount: number;
+        totalAdminsCount: number;
         page: number;
         totalPages: number;
     }>;

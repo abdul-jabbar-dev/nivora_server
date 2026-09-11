@@ -43,6 +43,9 @@ let OrdersController = class OrdersController {
     updateOrderStatus(id, body) {
         return this.ordersService.updateOrderStatus(id, body.status, body.note);
     }
+    deleteAdminOrder(id) {
+        return this.ordersService.deleteOrder(id);
+    }
     findOne(req, id) {
         const userId = req.user.id || req.user.sub;
         return this.ordersService.findOne(id, userId);
@@ -112,6 +115,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], OrdersController.prototype, "updateOrderStatus", null);
+__decorate([
+    (0, common_1.Delete)('admin/:id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], OrdersController.prototype, "deleteAdminOrder", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

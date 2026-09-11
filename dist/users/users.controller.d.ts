@@ -54,7 +54,7 @@ export declare class UsersController {
         landmark: string | null;
         phoneNumber: string | null;
     }>;
-    getAllCustomers(page?: string, limit?: string): Promise<{
+    getAllCustomers(page?: string, limit?: string, role?: string): Promise<{
         users: {
             orderCount: number;
             totalSpent: number;
@@ -76,6 +76,8 @@ export declare class UsersController {
             phoneNumber: string | null;
         }[];
         total: number;
+        totalUsersCount: number;
+        totalAdminsCount: number;
         page: number;
         totalPages: number;
     }>;

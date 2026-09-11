@@ -226,20 +226,54 @@ let ProductsService = class ProductsService {
         });
     }
     async updateCategory(id, data) {
+        const sanitizedData = { ...data };
+        if ('parentId' in sanitizedData && (!sanitizedData.parentId || sanitizedData.parentId === '')) {
+            sanitizedData.parentId = null;
+        }
         return this.prisma.category.update({
             where: { id },
-            data,
+            data: sanitizedData,
+        });
+    }
+    async deleteCategory(id) {
+        const category = await this.prisma.category.findUnique({ where: { id } });
+        if (!category)
+            throw new common_1.NotFoundException('Category not found');
+        return this.prisma.$transaction(async (tx) => {
+            await tx.category.updateMany({
+                where: { parentId: id },
+                data: { parentId: category.parentId || null },
+            });
+            await tx.product.updateMany({
+                where: { categoryId: id },
+                data: { categoryId: null },
+            });
+            return tx.category.delete({
+                where: { id },
+            });
         });
     }
     async update(id, data) {
+        const sanitizedData = { ...data };
+        if ('categoryId' in sanitizedData && (!sanitizedData.categoryId || sanitizedData.categoryId === '')) {
+            sanitizedData.categoryId = null;
+        }
         return this.prisma.product.update({
             where: { id },
-            data,
+            data: sanitizedData,
         });
     }
     async remove(id) {
-        return this.prisma.product.delete({
-            where: { id },
+        const product = await this.prisma.product.findUnique({ where: { id } });
+        if (!product)
+            throw new common_1.NotFoundException('Product not found');
+        return this.prisma.$transaction(async (tx) => {
+            await tx.watchlist.deleteMany({ where: { productId: id } });
+            await tx.cartItem.deleteMany({ where: { productId: id } });
+            await tx.review.deleteMany({ where: { productId: id } });
+            await tx.productInteraction.deleteMany({ where: { productId: id } });
+            await tx.orderItem.deleteMany({ where: { productId: id } });
+            return tx.product.delete({ where: { id } });
         });
     }
     async getInteractionStatus(userId, productId) {

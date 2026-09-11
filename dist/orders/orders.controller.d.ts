@@ -292,6 +292,23 @@ export declare class OrdersController {
         bkashNumber: string | null;
         trxId: string | null;
     }>;
+    deleteAdminOrder(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        address: string | null;
+        city: string | null;
+        zip: string | null;
+        landmark: string | null;
+        phoneNumber: string | null;
+        userId: string;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        total: number;
+        paymentMethod: string | null;
+        shippingMethod: string | null;
+        bkashNumber: string | null;
+        trxId: string | null;
+    }>;
     findOne(req: any, id: string): Promise<{
         items: ({
             product: {

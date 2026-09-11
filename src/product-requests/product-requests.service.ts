@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -31,8 +31,7 @@ export class ProductRequestsService {
       include: { user: true },
     });
     if (!req) {
-      const common = require('@nestjs/common');
-      throw new common.NotFoundException('Product request not found');
+      throw new NotFoundException('Product request not found');
     }
     return req;
   }
@@ -41,6 +40,16 @@ export class ProductRequestsService {
     return this.prisma.productRequest.update({
       where: { id },
       data: { status },
+    });
+  }
+
+  async remove(id: string) {
+    const req = await this.prisma.productRequest.findUnique({ where: { id } });
+    if (!req) {
+      throw new NotFoundException('Product request not found');
+    }
+    return this.prisma.productRequest.delete({
+      where: { id },
     });
   }
 }

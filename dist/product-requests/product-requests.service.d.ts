@@ -107,4 +107,19 @@ export declare class ProductRequestsService {
         color: string | null;
         size: string | null;
     }>;
+    remove(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string | null;
+        status: string;
+        quantity: number | null;
+        images: import("@prisma/client/runtime/library").JsonValue | null;
+        title: string;
+        model: string | null;
+        customerName: string;
+        customerPhone: string;
+        color: string | null;
+        size: string | null;
+    }>;
 }

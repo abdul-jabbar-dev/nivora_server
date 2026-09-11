@@ -41,10 +41,16 @@ let UsersService = class UsersService {
             },
         });
     }
-    async findAll(page = 1, limit = 20) {
+    async findAll(page = 1, limit = 20, role) {
         const skip = (page - 1) * limit;
-        const [users, total] = await Promise.all([
+        let targetRole = undefined;
+        if (role && role !== 'ALL') {
+            targetRole = role.toUpperCase() === 'USER' || role.toUpperCase() === 'CUSTOMER' ? 'CUSTOMER' : 'ADMIN';
+        }
+        const where = targetRole ? { role: targetRole } : undefined;
+        const [users, total, totalUsersCount, totalAdminsCount] = await Promise.all([
             this.prisma.user.findMany({
+                where,
                 skip,
                 take: limit,
                 orderBy: { createdAt: 'desc' },
@@ -54,7 +60,9 @@ let UsersService = class UsersService {
                     }
                 }
             }),
-            this.prisma.user.count()
+            this.prisma.user.count({ where }),
+            this.prisma.user.count({ where: { role: 'CUSTOMER' } }),
+            this.prisma.user.count({ where: { role: 'ADMIN' } })
         ]);
         const usersWithStats = users.map(user => {
             const successfulOrders = user.orders.filter(o => o.status !== 'CANCELLED');
@@ -68,6 +76,8 @@ let UsersService = class UsersService {
         return {
             users: usersWithStats,
             total,
+            totalUsersCount,
+            totalAdminsCount,
             page,
             totalPages: Math.ceil(total / limit)
         };

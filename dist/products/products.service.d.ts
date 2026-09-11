@@ -302,6 +302,14 @@ export declare class ProductsService {
         showNav: boolean;
         parentId: string | null;
     }>;
+    deleteCategory(id: string): Promise<{
+        id: string;
+        name: string;
+        slug: string;
+        imageUrl: string | null;
+        showNav: boolean;
+        parentId: string | null;
+    }>;
     update(id: string, data: any): Promise<{
         id: string;
         createdAt: Date;

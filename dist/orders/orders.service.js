@@ -235,6 +235,16 @@ let OrdersService = class OrdersService {
             }
         });
     }
+    async deleteOrder(id) {
+        const order = await this.prisma.order.findUnique({ where: { id } });
+        if (!order)
+            throw new common_1.NotFoundException('Order not found');
+        return this.prisma.$transaction(async (tx) => {
+            await tx.orderItem.deleteMany({ where: { orderId: id } });
+            await tx.orderStatusHistory.deleteMany({ where: { orderId: id } });
+            return tx.order.delete({ where: { id } });
+        });
+    }
 };
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([

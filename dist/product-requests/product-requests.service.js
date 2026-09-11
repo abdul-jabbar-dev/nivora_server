@@ -40,8 +40,7 @@ let ProductRequestsService = class ProductRequestsService {
             include: { user: true },
         });
         if (!req) {
-            const common = require('@nestjs/common');
-            throw new common.NotFoundException('Product request not found');
+            throw new common_1.NotFoundException('Product request not found');
         }
         return req;
     }
@@ -49,6 +48,15 @@ let ProductRequestsService = class ProductRequestsService {
         return this.prisma.productRequest.update({
             where: { id },
             data: { status },
+        });
+    }
+    async remove(id) {
+        const req = await this.prisma.productRequest.findUnique({ where: { id } });
+        if (!req) {
+            throw new common_1.NotFoundException('Product request not found');
+        }
+        return this.prisma.productRequest.delete({
+            where: { id },
         });
     }
 };

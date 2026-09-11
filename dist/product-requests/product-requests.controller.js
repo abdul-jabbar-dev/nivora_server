@@ -39,6 +39,9 @@ let ProductRequestsController = class ProductRequestsController {
     updateStatus(id, status) {
         return this.productRequestsService.updateStatus(id, status);
     }
+    remove(id) {
+        return this.productRequestsService.remove(id);
+    }
 };
 exports.ProductRequestsController = ProductRequestsController;
 __decorate([
@@ -83,6 +86,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ProductRequestsController.prototype, "updateStatus", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProductRequestsController.prototype, "remove", null);
 exports.ProductRequestsController = ProductRequestsController = __decorate([
     (0, common_1.Controller)('product-requests'),
     __metadata("design:paramtypes", [product_requests_service_1.ProductRequestsService])

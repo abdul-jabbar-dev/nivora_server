@@ -372,4 +372,21 @@ export declare class OrdersService {
         bkashNumber: string | null;
         trxId: string | null;
     }>;
+    deleteOrder(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        address: string | null;
+        city: string | null;
+        zip: string | null;
+        landmark: string | null;
+        phoneNumber: string | null;
+        userId: string;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        total: number;
+        paymentMethod: string | null;
+        shippingMethod: string | null;
+        bkashNumber: string | null;
+        trxId: string | null;
+    }>;
 }

@@ -25,10 +25,15 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Get('admin/all')
-  getAllCustomers(@Query('page') page?: string, @Query('limit') limit?: string) {
+  getAllCustomers(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('role') role?: string
+  ) {
     return this.usersService.findAll(
       page ? parseInt(page) : 1,
-      limit ? parseInt(limit) : 20
+      limit ? parseInt(limit) : 20,
+      role
     );
   }
 

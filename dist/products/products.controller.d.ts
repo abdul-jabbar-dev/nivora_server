@@ -270,6 +270,14 @@ export declare class ProductsController {
         showNav: boolean;
         parentId: string | null;
     }>;
+    removeCategory(id: string): Promise<{
+        id: string;
+        name: string;
+        slug: string;
+        imageUrl: string | null;
+        showNav: boolean;
+        parentId: string | null;
+    }>;
     create(createProductDto: any): Promise<{
         id: string;
         createdAt: Date;

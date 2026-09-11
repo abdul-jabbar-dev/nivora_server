@@ -30,11 +30,17 @@ export class UsersService {
       },
     });
   }
-  async findAll(page: number = 1, limit: number = 20) {
+  async findAll(page: number = 1, limit: number = 20, role?: string) {
     const skip = (page - 1) * limit;
+    let targetRole: any = undefined;
+    if (role && role !== 'ALL') {
+      targetRole = role.toUpperCase() === 'USER' || role.toUpperCase() === 'CUSTOMER' ? 'CUSTOMER' : 'ADMIN';
+    }
+    const where = targetRole ? { role: targetRole } : undefined;
     
-    const [users, total] = await Promise.all([
+    const [users, total, totalUsersCount, totalAdminsCount] = await Promise.all([
       this.prisma.user.findMany({
+        where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
@@ -44,7 +50,9 @@ export class UsersService {
           }
         }
       }),
-      this.prisma.user.count()
+      this.prisma.user.count({ where }),
+      this.prisma.user.count({ where: { role: 'CUSTOMER' } }),
+      this.prisma.user.count({ where: { role: 'ADMIN' } })
     ]);
     
     const usersWithStats = users.map(user => {
@@ -60,6 +68,8 @@ export class UsersService {
     return {
       users: usersWithStats,
       total,
+      totalUsersCount,
+      totalAdminsCount,
       page,
       totalPages: Math.ceil(total / limit)
     };
