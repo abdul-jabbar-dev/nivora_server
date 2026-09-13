@@ -43,8 +43,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            variant: string | null;
             cartId: string;
+            variant: string | null;
         })[];
     } & {
         id: string;
@@ -95,8 +95,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            variant: string | null;
             cartId: string;
+            variant: string | null;
         })[];
     } & {
         id: string;
@@ -149,8 +149,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            variant: string | null;
             cartId: string;
+            variant: string | null;
         })[];
     } & {
         id: string;
@@ -203,8 +203,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            variant: string | null;
             cartId: string;
+            variant: string | null;
         })[];
     } & {
         id: string;
@@ -253,8 +253,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            variant: string | null;
             cartId: string;
+            variant: string | null;
         })[];
     } & {
         id: string;
@@ -303,8 +303,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            variant: string | null;
             cartId: string;
+            variant: string | null;
         })[];
     } & {
         id: string;

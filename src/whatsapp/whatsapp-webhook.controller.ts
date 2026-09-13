@@ -33,7 +33,8 @@ export class WhatsappWebhookController {
     const token = query['hub.verify_token'] || (query.hub as any)?.verify_token;
     const challenge = query['hub.challenge'] || (query.hub as any)?.challenge;
 
-    const expectedToken = ENV.WHATSAPP.VERIFY_TOKEN;
+    const expectedToken =
+      ENV.WHATSAPP.VERIFY_TOKEN 
 
     if (!expectedToken) {
       this.logger.error('WHATSAPP_VERIFY_TOKEN is not configured on the server');
