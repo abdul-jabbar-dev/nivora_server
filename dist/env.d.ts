@@ -12,4 +12,15 @@ export declare const ENV: {
     SUPABASE_BUCKET: string;
     ADMIN_EMAIL: string;
     ADMIN_SECRET: string;
+    WHATSAPP: {
+        API_URL: string;
+        PHONE_NUMBER_ID: string;
+        BUSINESS_ACCOUNT_ID: string;
+        APP_ID: string;
+        APP_SECRET: string;
+        ACCESS_TOKEN: string;
+        ADMIN_NUMBER: string;
+        TEMPLATE_NAME: string;
+        VERIFY_TOKEN: string;
+    };
 };

@@ -11,14 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../prisma/prisma.service");
+const prisma_service_js_1 = require("../prisma/prisma.service.js");
+const whatsapp_service_js_1 = require("../whatsapp/whatsapp.service.js");
 let OrdersService = class OrdersService {
     prisma;
-    constructor(prisma) {
+    whatsappService;
+    constructor(prisma, whatsappService) {
         this.prisma = prisma;
+        this.whatsappService = whatsappService;
     }
     async create(userId, createOrderDto) {
-        return this.prisma.$transaction(async (tx) => {
+        const order = await this.prisma.$transaction(async (tx) => {
             const productIds = createOrderDto.items.map((item) => item.productId);
             const products = await tx.product.findMany({
                 where: { id: { in: productIds } }
@@ -44,7 +47,7 @@ let OrdersService = class OrdersService {
                     data: { stock: { decrement: item.quantity } }
                 });
             }
-            const order = await tx.order.create({
+            const createdOrder = await tx.order.create({
                 data: {
                     userId,
                     total: finalTotal,
@@ -71,7 +74,13 @@ let OrdersService = class OrdersService {
                         }
                     }
                 },
-                include: { items: true, statusHistory: true },
+                include: {
+                    items: {
+                        include: { product: true },
+                    },
+                    statusHistory: true,
+                    user: true,
+                },
             });
             const cart = await tx.cart.findUnique({ where: { userId } });
             if (cart) {
@@ -79,8 +88,12 @@ let OrdersService = class OrdersService {
                     where: { cartId: cart.id }
                 });
             }
-            return order;
+            return createdOrder;
         });
+        this.whatsappService.sendOrderNotification(order).catch((err) => {
+            console.error('WhatsApp notification error:', err);
+        });
+        return order;
     }
     async findAllForUser(userId, page = 1, limit = 10, status, search) {
         const skip = (page - 1) * limit;
@@ -249,6 +262,7 @@ let OrdersService = class OrdersService {
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_js_1.PrismaService,
+        whatsapp_service_js_1.WhatsappService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

@@ -15,4 +15,15 @@ export const ENV = {
   SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || 'products',
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin@gmail.com',
   ADMIN_SECRET: process.env.ADMIN_SECRET || 'admin_secret_12345',
+  WHATSAPP: {
+    API_URL: process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v25.0',
+    PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID || '1326593580541232',
+    BUSINESS_ACCOUNT_ID: process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || '2828940924150871',
+    APP_ID: process.env.WHATSAPP_APP_ID || '1047423104770509',
+    APP_SECRET: process.env.WHATSAPP_APP_SECRET || '456434220d4e01e6812b77688368c782',
+    ACCESS_TOKEN: process.env.WHATSAPP_ACCESS_TOKEN || '',
+    ADMIN_NUMBER: process.env.WHATSAPP_ADMIN_NUMBER || '8801345861869',
+    TEMPLATE_NAME: process.env.WHATSAPP_TEMPLATE_NAME || 'jaspers_market_order_confirmation_v1',
+    VERIFY_TOKEN: process.env.WHATSAPP_VERIFY_TOKEN || '',
+  },
 };

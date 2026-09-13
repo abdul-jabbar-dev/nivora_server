@@ -13,9 +13,24 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { ProductRequestsModule } from './product-requests/product-requests.module';
 import { BillboardsModule } from './billboards/billboards.module.js';
 import { SiteSettingsModule } from './site-settings/site-settings.module.js';
+import { WhatsappModule } from './whatsapp/whatsapp.module.js';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, ProductsModule, OrdersModule, WatchlistModule, UploadModule, CartModule, ReviewsModule, ProductRequestsModule, BillboardsModule, SiteSettingsModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    UsersModule,
+    ProductsModule,
+    OrdersModule,
+    WatchlistModule,
+    UploadModule,
+    CartModule,
+    ReviewsModule,
+    ProductRequestsModule,
+    BillboardsModule,
+    SiteSettingsModule,
+    WhatsappModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

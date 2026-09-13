@@ -7,7 +7,14 @@ import { ENV } from './env';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(express.json({ limit: '50mb' }));
+  app.use(
+    express.json({
+      limit: '50mb',
+      verify: (req: any, _res: any, buf: Buffer) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   app.enableCors({

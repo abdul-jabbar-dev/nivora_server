@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { WhatsappService } from '../whatsapp/whatsapp.service.js';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private whatsappService: WhatsappService,
+  ) {}
 
   async create(userId: string, createOrderDto: any) {
-    return this.prisma.$transaction(async (tx) => {
+    const order = await this.prisma.$transaction(async (tx) => {
       const productIds = createOrderDto.items.map((item: any) => item.productId);
       const products = await tx.product.findMany({
         where: { id: { in: productIds } }
@@ -42,7 +46,7 @@ export class OrdersService {
       }
 
       // Create the order
-      const order = await tx.order.create({
+      const createdOrder = await tx.order.create({
         data: {
           userId,
           total: finalTotal,
@@ -69,7 +73,13 @@ export class OrdersService {
             }
           }
         },
-        include: { items: true, statusHistory: true },
+        include: {
+          items: {
+            include: { product: true },
+          },
+          statusHistory: true,
+          user: true,
+        },
       });
 
       // Clear the user's cart
@@ -80,8 +90,15 @@ export class OrdersService {
         });
       }
 
-      return order;
+      return createdOrder;
     });
+
+    // Send WhatsApp notification to store owner in the background
+    this.whatsappService.sendOrderNotification(order).catch((err) => {
+      console.error('WhatsApp notification error:', err);
+    });
+
+    return order;
   }
 
   async findAllForUser(userId: string, page = 1, limit = 10, status?: string, search?: string) {

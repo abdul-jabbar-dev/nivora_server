@@ -1,15 +1,65 @@
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { WhatsappService } from '../whatsapp/whatsapp.service.js';
 export declare class OrdersService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private whatsappService;
+    constructor(prisma: PrismaService, whatsappService: WhatsappService);
     create(userId: string, createOrderDto: any): Promise<{
-        items: {
+        user: {
+            id: string;
+            email: string;
+            role: import(".prisma/client").$Enums.Role;
+            firstName: string | null;
+            lastName: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            address: string | null;
+            city: string | null;
+            zip: string | null;
+            landmark: string | null;
+            phoneNumber: string | null;
+        };
+        items: ({
+            product: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                status: string;
+                price: number;
+                slug: string;
+                description: string | null;
+                originalPrice: number | null;
+                imageUrl: string;
+                images: string[];
+                brand: string | null;
+                rating: number;
+                reviewCount: number;
+                isNew: boolean;
+                isTrending: boolean;
+                features: string[];
+                specifications: import("@prisma/client/runtime/library.js").JsonValue | null;
+                shipping: import("@prisma/client/runtime/library.js").JsonValue | null;
+                variants: import("@prisma/client/runtime/library.js").JsonValue | null;
+                stock: number;
+                likesCount: number;
+                dislikesCount: number;
+                categoryId: string | null;
+                visibleStatus: string;
+                offerPrice: number | null;
+                discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
+                sourceInfo: import("@prisma/client/runtime/library.js").JsonValue | null;
+                expectedArrivalDate: Date | null;
+            };
+        } & {
             id: string;
             orderId: string;
             productId: string;
             quantity: number;
             price: number;
-        }[];
+        })[];
         statusHistory: {
             id: string;
             createdAt: Date;
@@ -45,21 +95,19 @@ export declare class OrdersService {
                     status: string;
                     price: number;
                     slug: string;
-                    imageUrl: string;
-                    brand: string | null;
                     description: string | null;
-                    newArrivalOrder: number;
-                    discountOrder: number;
                     originalPrice: number | null;
+                    imageUrl: string;
                     images: string[];
+                    brand: string | null;
                     rating: number;
                     reviewCount: number;
                     isNew: boolean;
                     isTrending: boolean;
                     features: string[];
-                    specifications: import("@prisma/client/runtime/library").JsonValue | null;
-                    shipping: import("@prisma/client/runtime/library").JsonValue | null;
-                    variants: import("@prisma/client/runtime/library").JsonValue | null;
+                    specifications: import("@prisma/client/runtime/library.js").JsonValue | null;
+                    shipping: import("@prisma/client/runtime/library.js").JsonValue | null;
+                    variants: import("@prisma/client/runtime/library.js").JsonValue | null;
                     stock: number;
                     likesCount: number;
                     dislikesCount: number;
@@ -67,7 +115,9 @@ export declare class OrdersService {
                     visibleStatus: string;
                     offerPrice: number | null;
                     discountExpiryDate: Date | null;
-                    sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+                    newArrivalOrder: number;
+                    discountOrder: number;
+                    sourceInfo: import("@prisma/client/runtime/library.js").JsonValue | null;
                     expectedArrivalDate: Date | null;
                 };
             } & {
@@ -114,21 +164,19 @@ export declare class OrdersService {
                 status: string;
                 price: number;
                 slug: string;
-                imageUrl: string;
-                brand: string | null;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
+                imageUrl: string;
                 images: string[];
+                brand: string | null;
                 rating: number;
                 reviewCount: number;
                 isNew: boolean;
                 isTrending: boolean;
                 features: string[];
-                specifications: import("@prisma/client/runtime/library").JsonValue | null;
-                shipping: import("@prisma/client/runtime/library").JsonValue | null;
-                variants: import("@prisma/client/runtime/library").JsonValue | null;
+                specifications: import("@prisma/client/runtime/library.js").JsonValue | null;
+                shipping: import("@prisma/client/runtime/library.js").JsonValue | null;
+                variants: import("@prisma/client/runtime/library.js").JsonValue | null;
                 stock: number;
                 likesCount: number;
                 dislikesCount: number;
@@ -136,7 +184,9 @@ export declare class OrdersService {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
-                sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+                newArrivalOrder: number;
+                discountOrder: number;
+                sourceInfo: import("@prisma/client/runtime/library.js").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
         } & {
@@ -274,21 +324,19 @@ export declare class OrdersService {
                 status: string;
                 price: number;
                 slug: string;
-                imageUrl: string;
-                brand: string | null;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
+                imageUrl: string;
                 images: string[];
+                brand: string | null;
                 rating: number;
                 reviewCount: number;
                 isNew: boolean;
                 isTrending: boolean;
                 features: string[];
-                specifications: import("@prisma/client/runtime/library").JsonValue | null;
-                shipping: import("@prisma/client/runtime/library").JsonValue | null;
-                variants: import("@prisma/client/runtime/library").JsonValue | null;
+                specifications: import("@prisma/client/runtime/library.js").JsonValue | null;
+                shipping: import("@prisma/client/runtime/library.js").JsonValue | null;
+                variants: import("@prisma/client/runtime/library.js").JsonValue | null;
                 stock: number;
                 likesCount: number;
                 dislikesCount: number;
@@ -296,7 +344,9 @@ export declare class OrdersService {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
-                sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
+                newArrivalOrder: number;
+                discountOrder: number;
+                sourceInfo: import("@prisma/client/runtime/library.js").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
         } & {

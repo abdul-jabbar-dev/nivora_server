@@ -12,13 +12,11 @@ export declare class CartController {
                 status: string;
                 price: number;
                 slug: string;
-                imageUrl: string;
-                brand: string | null;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
+                imageUrl: string;
                 images: string[];
+                brand: string | null;
                 rating: number;
                 reviewCount: number;
                 isNew: boolean;
@@ -34,6 +32,8 @@ export declare class CartController {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
@@ -43,8 +43,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            cartId: string;
             variant: string | null;
+            cartId: string;
         })[];
     } & {
         id: string;
@@ -64,13 +64,11 @@ export declare class CartController {
                 status: string;
                 price: number;
                 slug: string;
-                imageUrl: string;
-                brand: string | null;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
+                imageUrl: string;
                 images: string[];
+                brand: string | null;
                 rating: number;
                 reviewCount: number;
                 isNew: boolean;
@@ -86,6 +84,8 @@ export declare class CartController {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
@@ -95,8 +95,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            cartId: string;
             variant: string | null;
+            cartId: string;
         })[];
     } & {
         id: string;
@@ -118,13 +118,11 @@ export declare class CartController {
                 status: string;
                 price: number;
                 slug: string;
-                imageUrl: string;
-                brand: string | null;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
+                imageUrl: string;
                 images: string[];
+                brand: string | null;
                 rating: number;
                 reviewCount: number;
                 isNew: boolean;
@@ -140,6 +138,8 @@ export declare class CartController {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
@@ -149,8 +149,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            cartId: string;
             variant: string | null;
+            cartId: string;
         })[];
     } & {
         id: string;
@@ -172,13 +172,11 @@ export declare class CartController {
                 status: string;
                 price: number;
                 slug: string;
-                imageUrl: string;
-                brand: string | null;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
+                imageUrl: string;
                 images: string[];
+                brand: string | null;
                 rating: number;
                 reviewCount: number;
                 isNew: boolean;
@@ -194,6 +192,8 @@ export declare class CartController {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
@@ -203,8 +203,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            cartId: string;
             variant: string | null;
+            cartId: string;
         })[];
     } & {
         id: string;
@@ -222,13 +222,11 @@ export declare class CartController {
                 status: string;
                 price: number;
                 slug: string;
-                imageUrl: string;
-                brand: string | null;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
+                imageUrl: string;
                 images: string[];
+                brand: string | null;
                 rating: number;
                 reviewCount: number;
                 isNew: boolean;
@@ -244,6 +242,8 @@ export declare class CartController {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
@@ -253,8 +253,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            cartId: string;
             variant: string | null;
+            cartId: string;
         })[];
     } & {
         id: string;
@@ -272,13 +272,11 @@ export declare class CartController {
                 status: string;
                 price: number;
                 slug: string;
-                imageUrl: string;
-                brand: string | null;
                 description: string | null;
-                newArrivalOrder: number;
-                discountOrder: number;
                 originalPrice: number | null;
+                imageUrl: string;
                 images: string[];
+                brand: string | null;
                 rating: number;
                 reviewCount: number;
                 isNew: boolean;
@@ -294,6 +292,8 @@ export declare class CartController {
                 visibleStatus: string;
                 offerPrice: number | null;
                 discountExpiryDate: Date | null;
+                newArrivalOrder: number;
+                discountOrder: number;
                 sourceInfo: import("@prisma/client/runtime/library").JsonValue | null;
                 expectedArrivalDate: Date | null;
             };
@@ -303,8 +303,8 @@ export declare class CartController {
             updatedAt: Date;
             productId: string;
             quantity: number;
-            cartId: string;
             variant: string | null;
+            cartId: string;
         })[];
     } & {
         id: string;

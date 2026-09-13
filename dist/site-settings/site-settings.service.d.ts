@@ -9,12 +9,12 @@ export declare class SiteSettingsService {
         updatedAt: Date;
         address: string | null;
         bkashNumber: string | null;
+        whatsapp: string | null;
         facebookUrl: string | null;
         instagramUrl: string | null;
         freeShippingThreshold: number;
         contactEmail: string | null;
         contactPhone: string | null;
-        whatsapp: string | null;
     }>;
     updateSettings(data: Partial<SiteSetting>): Promise<{
         id: string;
@@ -22,11 +22,11 @@ export declare class SiteSettingsService {
         updatedAt: Date;
         address: string | null;
         bkashNumber: string | null;
+        whatsapp: string | null;
         facebookUrl: string | null;
         instagramUrl: string | null;
         freeShippingThreshold: number;
         contactEmail: string | null;
         contactPhone: string | null;
-        whatsapp: string | null;
     }>;
 }
